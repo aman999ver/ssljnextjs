@@ -62,6 +62,25 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
+// Get featured products (top 4)
+app.get('/api/products/featured', async (req, res) => {
+  try {
+    const rawProducts = await Product.find({}).sort({ _id: -1 }).limit(4).lean();
+    
+    const products = rawProducts.map((p) => ({
+      slug: p.slug || p._id.toString(),
+      name: p.name || p.productName || p.title || "Unnamed Product",
+      price: p.price || p.productPrice || null,
+      category: p.category || p.categoryName || null,
+      imageUrl: p.image || (p.images && p.images.length > 0 ? p.images[0] : null),
+    }));
+    
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch featured products' });
+  }
+});
+
 // Get single product by slug or id
 app.get('/api/products/:slug', async (req, res) => {
   try {
@@ -87,24 +106,6 @@ app.get('/api/products/:slug', async (req, res) => {
   }
 });
 
-// Get featured products (top 4)
-app.get('/api/products/featured', async (req, res) => {
-  try {
-    const rawProducts = await Product.find({}).sort({ _id: -1 }).limit(4).lean();
-    
-    const products = rawProducts.map((p) => ({
-      slug: p.slug || p._id.toString(),
-      name: p.name || p.productName || p.title || "Unnamed Product",
-      price: p.price || p.productPrice || null,
-      category: p.category || p.categoryName || null,
-      imageUrl: p.image || (p.images && p.images.length > 0 ? p.images[0] : null),
-    }));
-    
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch featured products' });
-  }
-});
 
 // Get active banners
 app.get('/api/banners/active', async (req, res) => {
