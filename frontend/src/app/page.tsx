@@ -46,7 +46,7 @@ export default async function Home() {
   const ratesData = await getRates();
   const dbData = await getDbData();
   const offset = ratesData?.offset;
-  
+
   const gold24k = offset?.final_gold_rate || 0;
   const gold22k = Math.round(gold24k * 0.92);
   const silver = offset?.final_silver_rate || 0;
@@ -55,10 +55,10 @@ export default async function Home() {
   const hasBanners = dbData.banners && dbData.banners.length > 0;
 
   return (
-      <main className="flex flex-col min-h-screen">
+    <main className="flex flex-col min-h-screen">
       {/* 1. Announcement Bar */}
       <div className="bg-foreground text-background py-2 text-center text-xs tracking-widest uppercase font-sans font-light">
-        Free secure delivery across Nepal on orders over NPR 50,000
+        Free secure delivery across Biratnagar on orders over NPR 50,000
       </div>
 
       {/* 2. Elegant Navigation */}
@@ -67,40 +67,41 @@ export default async function Home() {
       {/* 3. Hero Section (Dynamic Banner Slideshow) */}
       <section className="relative h-[80vh] flex items-center justify-center bg-muted overflow-hidden">
         {hasBanners && dbData.banners.map((banner: any, index: number) => (
-          <img 
+          <img
             key={banner._id || index}
-            src={banner.image || banner.imageUrl} 
-            alt="Banner" 
-            className="absolute inset-0 w-full h-full object-cover animate-fade-in-up" 
-            style={{ 
+            src={banner.image || banner.imageUrl}
+            alt="Banner"
+            className="absolute inset-0 w-full h-full object-cover animate-fade-in-up"
+            style={{
               animationDuration: '1.5s',
-              opacity: index === 0 ? 1 : 0, 
-            }} 
+              opacity: index === 0 ? 1 : 0,
+            }}
           />
         ))}
         {hasBanners && dbData.banners.length > 1 && (
-          <style dangerouslySetInnerHTML={{__html: `
+          <style dangerouslySetInnerHTML={{
+            __html: `
             .banner-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; animation: slideShow ${dbData.banners.length * 5}s infinite; }
-            ${dbData.banners.map((_:any, i:number) => `.banner-slide:nth-child(${i+1}) { animation-delay: ${i * 5}s; }`).join('\n')}
-            @keyframes slideShow { 0% { opacity: 0; } 10% { opacity: 1; } ${100/dbData.banners.length}% { opacity: 1; } ${(100/dbData.banners.length)+10}% { opacity: 0; } 100% { opacity: 0; } }
+            ${dbData.banners.map((_: any, i: number) => `.banner-slide:nth-child(${i + 1}) { animation-delay: ${i * 5}s; }`).join('\n')}
+            @keyframes slideShow { 0% { opacity: 0; } 10% { opacity: 1; } ${100 / dbData.banners.length}% { opacity: 1; } ${(100 / dbData.banners.length) + 10}% { opacity: 0; } 100% { opacity: 0; } }
           `}} />
         )}
         {hasBanners && dbData.banners.length > 1 && dbData.banners.map((banner: any, index: number) => (
-          <img 
-            key={"anim-"+banner._id}
-            src={banner.image || banner.imageUrl} 
-            alt="Banner" 
+          <img
+            key={"anim-" + banner._id}
+            src={banner.image || banner.imageUrl}
+            alt="Banner"
             className="banner-slide"
           />
         ))}
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
-          <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 animate-fade-in-up opacity-0">Legacy of Purity in Nepal</span>
-          <h1 className="font-heading text-5xl md:text-7xl font-normal text-white mb-8 leading-tight animate-fade-in-up opacity-0 animate-delay-100">
+        <div className="relative z-10 text-center px-4 md:px-8 max-w-4xl mx-auto flex flex-col items-center w-full">
+          <span className="font-sans text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-primary mb-4 md:mb-6 animate-fade-in-up opacity-0">Legacy of Purity in Nepal</span>
+          <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-normal text-white mb-6 md:mb-8 leading-tight animate-fade-in-up opacity-0 animate-delay-100 px-2">
             Crafting Timeless Elegance
           </h1>
-          <Link href="/shop" className="inline-block border border-white text-white bg-black/20 backdrop-blur-sm px-12 py-4 font-sans text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-500 animate-fade-in-up opacity-0 animate-delay-200">
+          <Link href="/shop" className="inline-block border border-white text-white bg-black/20 backdrop-blur-sm px-8 py-3 md:px-12 md:py-4 font-sans text-xs md:text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-500 animate-fade-in-up opacity-0 animate-delay-200 mt-2">
             Explore the Collection
           </Link>
         </div>
@@ -117,7 +118,7 @@ export default async function Home() {
             View Historical Data
           </Link>
         </div>
-        
+
         {!ratesData ? (
           <div className="p-12 border border-destructive/20 bg-destructive/5 flex items-center justify-center">
             <p className="font-sans text-destructive tracking-widest uppercase">Currently unable to fetch live rates. Please try again later.</p>
@@ -137,7 +138,7 @@ export default async function Home() {
           <span className="font-sans text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Curated Selection</span>
           <h2 className="font-heading text-4xl text-foreground">Featured Masterpieces</h2>
         </div>
-        
+
         {dbData.products.length === 0 ? (
           <div className="text-center text-muted-foreground font-sans text-sm tracking-widest uppercase py-12">
             No products found in the database.
@@ -177,7 +178,7 @@ export default async function Home() {
           <div>
             <h4 className="font-sans text-xs tracking-widest uppercase mb-6 opacity-60">Visit Us</h4>
             <address className="not-italic font-sans text-sm font-light space-y-2 opacity-80">
-              <p>Main Road, Biratnagar</p>
+              <p>Thakurbari Road, Ramjanaki Path, Biratnagar</p>
               <p>Morang, Nepal</p>
               <p className="pt-4 hover:text-primary transition-colors cursor-pointer">info@subhalaxmijewellery.com.np</p>
             </address>
