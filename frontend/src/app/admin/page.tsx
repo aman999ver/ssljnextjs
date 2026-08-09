@@ -86,6 +86,8 @@ export default function AdminPage() {
     if (res.ok) { const d = await res.json(); setOrders(d.data || d); setTotalPages(d.pagination?.pages || 1); }
   };
 
+  const [banners, setBanners] = useState([]);
+
   const fetchSettings = async (token: string) => {
     const res = await fetch(`${backendUrl}/api/admin/settings`, { headers: { "Authorization": `Bearer ${token}` } });
     if (res.ok) { 
@@ -96,6 +98,16 @@ export default function AdminPage() {
         silverTax: d.find((s:any) => s.key === "silverTax")?.value || 0
       });
     }
+
+    const bRes = await fetch(`${backendUrl}/api/admin/banners`, { headers: { "Authorization": `Bearer ${token}` } });
+    if (bRes.ok) setBanners(await bRes.json());
+  };
+
+  const deleteBanner = async (id: string) => {
+    if (!confirm("Delete banner?")) return;
+    const token = localStorage.getItem("token");
+    await fetch(`${backendUrl}/api/admin/banners/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+    fetchSettings(token!);
   };
 
   // ---- Image Upload ----
@@ -328,8 +340,8 @@ export default function AdminPage() {
             </div>
             
             <div className="bg-muted/30 p-10 border border-border/50">
-              <h2 className="font-heading text-3xl mb-8">Update Homepage Banner</h2>
-              <div className="border-2 border-dashed border-border/50 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/30" onClick={() => bannerFileInputRef.current?.click()}>
+              <h2 className="font-heading text-3xl mb-8">Homepage Banners (Slideshow)</h2>
+              <div className="border-2 border-dashed border-border/50 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/30 mb-8" onClick={() => bannerFileInputRef.current?.click()}>
                 <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">{uploadingImage ? "Uploading..." : "Click to upload Banner (Cloudinary)"}</span>
                 <input type="file" ref={bannerFileInputRef} className="hidden" accept="image/*" onChange={async (e) => {
@@ -338,21 +350,31 @@ export default function AdminPage() {
                     handleImageUpload(file, async (url) => {
                       const token = localStorage.getItem("token");
                       await fetch(`${backendUrl}/api/admin/banners`, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ imageUrl: url }) });
-                      alert("Banner updated!");
+                      alert("Banner added!");
+                      fetchSettings(token!);
                     });
                   }
                 }} />
+              </div>
+              
+              <div className="space-y-4">
+                {banners.map((b: any) => (
+                  <div key={b._id} className="flex justify-between items-center p-4 border border-border/50 bg-background">
+                    <img src={b.image || b.imageUrl} className="h-16 w-32 object-cover" />
+                    <button onClick={() => deleteBanner(b._id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={16}/></button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         )}
 
         {/* PAGINATION */}
-        {tab !== "settings" && totalPages > 1 && (
+        {tab !== "settings" && totalPages > 0 && (
           <div className="flex justify-center items-center mt-12 space-x-8">
             <button disabled={page === 1} onClick={() => setPage(page-1)} className="text-muted-foreground hover:text-foreground disabled:opacity-50"><ChevronLeft size={24}/></button>
             <span className="font-sans text-sm tracking-widest text-muted-foreground">Page {page} of {totalPages}</span>
-            <button disabled={page === totalPages} onClick={() => setPage(page+1)} className="text-muted-foreground hover:text-foreground disabled:opacity-50"><ChevronRight size={24}/></button>
+            <button disabled={page >= totalPages} onClick={() => setPage(page+1)} className="text-muted-foreground hover:text-foreground disabled:opacity-50"><ChevronRight size={24}/></button>
           </div>
         )}
       </section>

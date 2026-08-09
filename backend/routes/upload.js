@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
 
 cloudinary.config({
-  cloudinary_url: process.env.CLOUDINARY_URL
+  cloudinary_url: process.env.CLOUDINARY_URL || "cloudinary://125893293816666:OLEZhHlE0uDJxfx9-Q4PJSQMPhM@huqzbsak"
 });
 
 const storage = new CloudinaryStorage({

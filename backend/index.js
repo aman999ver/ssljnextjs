@@ -81,14 +81,13 @@ app.get('/api/products/featured', async (req, res) => {
   }
 });
 
-// Get active banner
+// Get active banners
 app.get('/api/banners/active', async (req, res) => {
   try {
-    const rawBanners = await Banner.find({}).sort({ _id: -1 }).limit(1).lean();
-    const banner = rawBanners.length > 0 ? rawBanners[0] : null;
-    res.json(banner);
+    const banners = await Banner.find({}).sort({ _id: -1 }).limit(3).lean();
+    res.json(banners);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch banner' });
+    res.status(500).json({ error: 'Failed to fetch banners' });
   }
 });
 

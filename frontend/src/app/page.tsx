@@ -20,14 +20,14 @@ async function getRates() {
 async function getDbData() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
   try {
-    const [productsRes, bannerRes, settingsRes] = await Promise.all([
+    const [productsRes, bannersRes, settingsRes] = await Promise.all([
       fetch(`${backendUrl}/api/products/featured`, { cache: 'no-store' }),
       fetch(`${backendUrl}/api/banners/active`, { cache: 'no-store' }),
       fetch(`${backendUrl}/api/settings`, { cache: 'no-store' })
     ]);
 
     const products = productsRes.ok ? await productsRes.json() : [];
-    const banner = bannerRes.ok ? await bannerRes.json() : null;
+    const banners = bannersRes.ok ? await bannersRes.json() : [];
     const settings = settingsRes.ok ? await settingsRes.json() : [];
 
     const taxes = {
@@ -35,10 +35,10 @@ async function getDbData() {
       silverTax: settings.find((s: any) => s.key === "silverTax")?.value || 0,
     };
 
-    return { products, banner, taxes };
+    return { products, banners, taxes };
   } catch (error) {
     console.error("Failed to fetch from Backend API:", error);
-    return { products: [], banner: null, taxes: { goldTax: 0, silverTax: 0 } };
+    return { products: [], banners: [], taxes: { goldTax: 0, silverTax: 0 } };
   }
 }
 
@@ -51,7 +51,8 @@ export default async function Home() {
   const gold22k = Math.round(gold24k * 0.92);
   const silver = offset?.final_silver_rate || 0;
 
-  const bannerImageUrl = dbData.banner?.image || dbData.banner?.imageUrl || null;
+  // Render a simple CSS-based slideshow if multiple banners exist
+  const hasBanners = dbData.banners && dbData.banners.length > 0;
 
   return (
     <main className="flex flex-col min-h-screen">
@@ -63,11 +64,36 @@ export default async function Home() {
       {/* 2. Elegant Navigation */}
       <Navbar />
 
-      {/* 3. Hero Section (Dynamic Banner) */}
+      {/* 3. Hero Section (Dynamic Banner Slideshow) */}
       <section className="relative h-[80vh] flex items-center justify-center bg-muted overflow-hidden">
-        {bannerImageUrl && (
-          <img src={bannerImageUrl} alt="Banner" className="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-overlay animate-fade-in-up" style={{ animationDuration: '1.5s' }} />
+        {hasBanners && dbData.banners.map((banner: any, index: number) => (
+          <img 
+            key={banner._id || index}
+            src={banner.image || banner.imageUrl} 
+            alt="Banner" 
+            className="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-overlay animate-fade-in-up" 
+            style={{ 
+              animationDuration: '1.5s',
+              opacity: index === 0 ? 0.7 : 0, // This is a static fallback, a real client-side slider would be better, but this gets the image up.
+            }} 
+          />
+        ))}
+        {hasBanners && dbData.banners.length > 1 && (
+          <style dangerouslySetInnerHTML={{__html: `
+            .banner-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: overlay; opacity: 0; animation: slideShow ${dbData.banners.length * 5}s infinite; }
+            ${dbData.banners.map((_:any, i:number) => `.banner-slide:nth-child(${i+1}) { animation-delay: ${i * 5}s; }`).join('\n')}
+            @keyframes slideShow { 0% { opacity: 0; } 10% { opacity: 0.7; } ${100/dbData.banners.length}% { opacity: 0.7; } ${(100/dbData.banners.length)+10}% { opacity: 0; } 100% { opacity: 0; } }
+          `}} />
         )}
+        {hasBanners && dbData.banners.length > 1 && dbData.banners.map((banner: any, index: number) => (
+          <img 
+            key={"anim-"+banner._id}
+            src={banner.image || banner.imageUrl} 
+            alt="Banner" 
+            className="banner-slide"
+          />
+        ))}
+
         <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/10 to-background/80" />
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
           <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 animate-fade-in-up opacity-0">Legacy of Purity</span>

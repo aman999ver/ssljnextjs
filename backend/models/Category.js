@@ -21,4 +21,4 @@ CategorySchema.pre('validate', function(next) {
   next();
 });
 
-module.exports = mongoose.model('categories', CategorySchema);
+module.exports = mongoose.model('categories', CategorySchema, 'catogries');

@@ -88,7 +88,8 @@ router.put('/settings', async (req, res) => {
 // --- Customer Management ---
 router.get('/customers', async (req, res) => {
   try {
-    const result = await paginate(User, { role: { $ne: 'admin' } }, req, { createdAt: -1 });
+    const query = { $or: [{ role: 'customer' }, { role: { $exists: false } }] };
+    const result = await paginate(User, query, req, { createdAt: -1 });
     // Remove password field
     result.data = result.data.map(c => { delete c.password; return c; });
     res.json(result);
@@ -98,6 +99,15 @@ router.get('/customers', async (req, res) => {
 });
 
 // --- Banner Management ---
+router.get('/banners', async (req, res) => {
+  try {
+    const banners = await Banner.find({}).sort({ _id: -1 }).lean();
+    res.json(banners);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch banners' });
+  }
+});
+
 router.post('/banners', async (req, res) => {
   try {
     const { imageUrl } = req.body;
@@ -106,6 +116,15 @@ router.post('/banners', async (req, res) => {
     res.json(banner);
   } catch (error) {
     res.status(500).json({ error: 'Failed to add banner' });
+  }
+});
+
+router.delete('/banners/:id', async (req, res) => {
+  try {
+    await Banner.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Banner deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete banner' });
   }
 });
 
