@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { User, ShoppingBag } from "lucide-react";
+import { User, ShoppingBag, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
@@ -45,19 +46,21 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav className="border-b border-border py-6 px-8 flex justify-between items-center bg-background/80 backdrop-blur-md sticky top-0 z-50">
-      <Link href="/" className="flex items-center gap-4">
-        <Image src="/logo.png" alt="Shree Shubha Laxmi Jewellery" width={150} height={150} className="h-16 w-auto object-contain" />
-        <span className="font-heading text-xl md:text-2xl uppercase tracking-widest text-primary hidden sm:block">
+    <nav className="border-b border-border py-3 px-4 md:py-4 md:px-8 flex justify-between items-center bg-background/80 backdrop-blur-md sticky top-0 z-50">
+      <Link href="/" className="flex items-center gap-2 md:gap-4 z-50">
+        <Image src="/logo.png" alt="Shree Shubha Laxmi Jewellery" width={150} height={150} className="h-10 md:h-12 w-auto object-contain" />
+        <span className="font-heading text-sm md:text-xl lg:text-2xl uppercase tracking-widest text-primary block">
           SUBHA LAXMI JEWELLERY
         </span>
       </Link>
+
+      {/* Desktop Navigation */}
       <div className="hidden md:flex items-center space-x-12">
-        <div className="flex space-x-12 font-sans text-sm tracking-widest uppercase">
+        <div className="flex space-x-8 lg:space-x-12 font-sans text-xs lg:text-sm tracking-widest uppercase">
           <Link href="/shop" className="hover:text-primary transition-colors">Shop</Link>
-          <Link href="/rates" className="font-sans text-xs tracking-widest uppercase hover:text-primary transition-colors">Rates</Link>
-          <Link href="/about" className="font-sans text-xs tracking-widest uppercase hover:text-primary transition-colors">Heritage</Link>
-          <Link href="/contact" className="font-sans text-xs tracking-widest uppercase hover:text-primary transition-colors">Contact</Link>
+          <Link href="/rates" className="hover:text-primary transition-colors">Rates</Link>
+          <Link href="/about" className="hover:text-primary transition-colors">Heritage</Link>
+          <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
         </div>
 
         {/* Action Icons */}
@@ -75,6 +78,34 @@ export function Navbar() {
           </Link>
         </div>
       </div>
+
+      {/* Mobile Action Icons & Hamburger */}
+      <div className="flex md:hidden items-center space-x-4 z-50">
+        <Link href={isLoggedIn ? "/profile" : "/login"} className="text-foreground hover:text-primary transition-colors">
+          <User className="w-5 h-5 font-light" />
+        </Link>
+        <Link href="/cart" className="relative text-foreground hover:text-primary transition-colors">
+          <ShoppingBag className="w-5 h-5 font-light" />
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-sans">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-foreground focus:outline-none">
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMenuOpen && (
+        <div className="absolute top-full left-0 w-full bg-background/95 backdrop-blur-md border-b border-border shadow-lg flex flex-col md:hidden py-6 px-4 space-y-6 animate-fade-in-down z-40">
+          <Link href="/shop" onClick={() => setIsMenuOpen(false)} className="font-sans text-sm tracking-widest uppercase hover:text-primary transition-colors">Shop</Link>
+          <Link href="/rates" onClick={() => setIsMenuOpen(false)} className="font-sans text-sm tracking-widest uppercase hover:text-primary transition-colors">Rates</Link>
+          <Link href="/about" onClick={() => setIsMenuOpen(false)} className="font-sans text-sm tracking-widest uppercase hover:text-primary transition-colors">Heritage</Link>
+          <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="font-sans text-sm tracking-widest uppercase hover:text-primary transition-colors">Contact</Link>
+        </div>
+      )}
     </nav>
   );
 }
