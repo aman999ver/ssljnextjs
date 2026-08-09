@@ -1,5 +1,6 @@
+"use client";
+
 import React from "react";
-import Link from "next/link";
 
 interface ProductCardProps {
   name: string;
@@ -10,8 +11,37 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ name, slug, price, imageUrl, category }: ProductCardProps) {
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
+    try {
+      const res = await fetch(`${backendUrl}/api/cart/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ productId: slug, quantity: 1 }) // Using slug as ID for simplicity
+      });
+      
+      if (res.ok) {
+        alert("Added to cart!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <Link href={`/product/${slug}`} className="group block cursor-pointer">
+    <div className="group block cursor-pointer" onClick={() => window.location.href = `/product/${slug}`}>
       <div className="relative aspect-[4/5] bg-muted/30 overflow-hidden mb-6">
         {imageUrl ? (
           <img 
@@ -38,7 +68,7 @@ export function ProductCard({ name, slug, price, imageUrl, category }: ProductCa
         <h3 className="font-heading text-xl text-foreground font-normal leading-tight group-hover:text-primary transition-colors duration-300">
           {name}
         </h3>
-        <div className="pt-2">
+        <div className="pt-2 flex justify-between items-center">
           {price ? (
             <span className="font-sans text-sm tracking-wide text-foreground">
               NPR {price.toLocaleString()}
@@ -48,8 +78,14 @@ export function ProductCard({ name, slug, price, imageUrl, category }: ProductCa
               Price upon request
             </span>
           )}
+          <button 
+            onClick={handleAddToCart}
+            className="font-sans text-[10px] uppercase tracking-widest text-primary border border-primary px-3 py-1 hover:bg-primary hover:text-primary-foreground transition-colors"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -17,6 +17,15 @@ mongoose.connect(MONGODB_URI, { family: 4 })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+// Routes
+const authRoutes = require('./routes/auth');
+const cartRoutes = require('./routes/cart');
+const adminRoutes = require('./routes/admin');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/admin', adminRoutes);
+
 // --- API Endpoints ---
 
 // Get all products

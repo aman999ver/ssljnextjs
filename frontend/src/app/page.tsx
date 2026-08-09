@@ -2,9 +2,6 @@ import { RateCard } from "@/components/shared/RateCard";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Navbar } from "@/components/shared/Navbar";
 import Link from "next/link";
-import dbConnect from "@/lib/mongoose";
-import { Product } from "@/models/Product";
-import { Banner } from "@/models/Banner";
 
 // Fetch Live Rates
 async function getRates() {
@@ -19,28 +16,21 @@ async function getRates() {
   }
 }
 
-// Fetch DB Data
+// Fetch Data from Render API
 async function getDbData() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
   try {
-    await dbConnect();
-    // Fetch top 4 featured products (or latest 4 if featured field doesn't exist)
-    const rawProducts = await Product.find({}).sort({ _id: -1 }).limit(4).lean();
-    // Fetch active banner
-    const rawBanners = await Banner.find({}).sort({ _id: -1 }).limit(1).lean();
-    
-    // Defensive mapping to handle legacy schema fields
-    const products = rawProducts.map((p: any) => ({
-      slug: p.slug || p._id.toString(),
-      name: p.name || p.productName || p.title || "Unnamed Product",
-      price: p.price || p.productPrice || null,
-      category: p.category || p.categoryName || null,
-      imageUrl: p.image || (p.images && p.images.length > 0 ? p.images[0] : null),
-    }));
+    // Fetch featured products
+    const prodRes = await fetch(`${backendUrl}/api/products/featured`, { cache: 'no-store' });
+    const products = prodRes.ok ? await prodRes.json() : [];
 
-    const banner = rawBanners.length > 0 ? rawBanners[0] : null;
+    // Fetch active banner
+    const bannerRes = await fetch(`${backendUrl}/api/banners/active`, { cache: 'no-store' });
+    const banner = bannerRes.ok ? await bannerRes.json() : null;
+    
     return { products, banner };
   } catch (error) {
-    console.error("Failed to fetch from DB:", error);
+    console.error("Failed to fetch from Backend API:", error);
     return { products: [], banner: null };
   }
 }

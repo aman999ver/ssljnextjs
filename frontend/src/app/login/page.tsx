@@ -1,0 +1,120 @@
+"use client";
+
+import { useState } from "react";
+import { Navbar } from "@/components/shared/Navbar";
+import { Button } from "@/components/ui/button";
+
+export default function LoginPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+    const body = isLogin ? { email, password } : { name, email, password };
+
+    try {
+      const res = await fetch(`${backendUrl}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setError(data.error || "Authentication failed");
+      } else {
+        // Securely store token
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        // Redirect based on role
+        if (data.user.role === 'admin') {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/shop";
+        }
+      }
+    } catch (err) {
+      setError("Network error. Please try again later.");
+    }
+  };
+
+  return (
+    <main className="flex flex-col min-h-screen bg-background">
+      <Navbar />
+      <section className="py-24 px-8 max-w-md mx-auto w-full flex-grow flex items-center">
+        <div className="bg-muted/50 p-10 w-full border border-border/50">
+          <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 block text-center">
+            {isLogin ? "Welcome Back" : "Join Us"}
+          </span>
+          <h1 className="font-heading text-4xl font-normal text-foreground mb-8 text-center">
+            {isLogin ? "Sign In" : "Create Account"}
+          </h1>
+          
+          {error && (
+            <div className="bg-destructive/10 text-destructive text-sm font-sans tracking-widest p-4 mb-6 uppercase text-center">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {!isLogin && (
+              <div>
+                <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Full Name</label>
+                <input 
+                  type="text" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                  placeholder="Your Name" 
+                  required={!isLogin}
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Email Address</label>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                placeholder="your@email.com" 
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Password</label>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                placeholder="••••••••" 
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-widest py-6 mt-4">
+              {isLogin ? "Sign In" : "Register"}
+            </Button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <button 
+              onClick={() => setIsLogin(!isLogin)} 
+              className="font-sans text-xs tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors"
+            >
+              {isLogin ? "Need an account? Register" : "Already have an account? Sign In"}
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}

@@ -1,24 +1,15 @@
 import { Navbar } from "@/components/shared/Navbar";
 import { ProductCard } from "@/components/shared/ProductCard";
-import dbConnect from "@/lib/mongoose";
-import { Product } from "@/models/Product";
 
-// Fetch DB Data
+// Fetch Data from Render API
 async function getProducts() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
   try {
-    await dbConnect();
-    const rawProducts = await Product.find({}).sort({ _id: -1 }).lean();
-    
-    // Defensive mapping to handle legacy schema fields
-    return rawProducts.map((p: any) => ({
-      slug: p.slug || p._id.toString(),
-      name: p.name || p.productName || p.title || "Unnamed Product",
-      price: p.price || p.productPrice || null,
-      category: p.category || p.categoryName || null,
-      imageUrl: p.image || (p.images && p.images.length > 0 ? p.images[0] : null),
-    }));
+    const res = await fetch(`${backendUrl}/api/products`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return await res.json();
   } catch (error) {
-    console.error("Failed to fetch from DB:", error);
+    console.error("Failed to fetch products from API:", error);
     return [];
   }
 }
