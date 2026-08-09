@@ -13,11 +13,16 @@ router.post('/', async (req, res) => {
   // Create transporter using environment variables
   // The user will need to supply EMAIL_USER and EMAIL_PASS in the backend .env
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
-      user: process.env.EMAIL_USER || 'geniusappsolu@gmail.com', // fallback
+      user: process.env.EMAIL_USER || 'geniusappsolu@gmail.com',
       pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 10000, // 10 seconds timeout
+    greetingTimeout: 5000,
+    socketTimeout: 10000
   });
 
   const mailOptions = {
