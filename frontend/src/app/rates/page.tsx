@@ -2,7 +2,6 @@ import { Navbar } from "@/components/shared/Navbar";
 import { RateCard } from "@/components/shared/RateCard";
 import { Metadata } from 'next';
 import Link from "next/link";
-import { format } from "date-fns"; // Standard Next.js date util, but we can just use native JS to avoid dependency issues if date-fns isn't installed.
 
 export const metadata: Metadata = {
   title: "Live Metal Rates",

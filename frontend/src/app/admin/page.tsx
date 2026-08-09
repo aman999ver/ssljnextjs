@@ -26,8 +26,16 @@ export default function AdminPage() {
   const [productForm, setProductForm] = useState({
     name: "", description: "", category: "", metalType: "22K",
     weight: 0, lossType: "none", lossValue: 0, makingCharge: 0,
+    priceMode: "dynamic", price: 0,
     imageUrl: "", isActive: true, featured: false
   });
+
+  const deleteProduct = async (id: string) => {
+    if (!confirm("Delete product?")) return;
+    const token = localStorage.getItem("token");
+    await fetch(`${backendUrl}/api/admin/products/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+    fetchProducts(token!);
+  };
   
   const [categoryForm, setCategoryForm] = useState({
     name: "", description: "", icon: "", image: "", color: "", gradient: ""
