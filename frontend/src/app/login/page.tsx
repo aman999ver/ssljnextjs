@@ -48,7 +48,7 @@ export default function LoginPage() {
 
   const handleGoogleClick = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId || clientId === "placeholder-client-id" || clientId === "") {
+    if (!clientId || clientId === "placeholder-client-id" || clientId === "placeholder_for_google_client_id" || clientId === "") {
       setError("Google Sign-In is not configured yet. Please use email login.");
       return;
     }
