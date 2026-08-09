@@ -7,7 +7,9 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: {
+    absolute: "Subha Laxmi Jewellery"
+  },
   description: "Welcome to Shree Subha Laxmi Jewellery, Biratnagar's premier destination for pure 24K gold, silver, and diamond jewellery.",
 };
 
