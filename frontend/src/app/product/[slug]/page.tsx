@@ -41,6 +41,8 @@ async function getProductData(slug: string) {
   }
 }
 
+import { AddToCartButton } from "@/components/shared/AddToCartButton";
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
@@ -138,9 +140,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </ul>
             </div>
 
-            <Button className="w-full h-16 rounded-none font-sans tracking-widest uppercase text-sm border border-primary bg-primary hover:bg-transparent hover:text-primary transition-all duration-500">
-              Add to Cart
-            </Button>
+            <AddToCartButton productId={product.slug} className="w-full h-16 rounded-none font-sans tracking-widest uppercase text-sm border border-primary bg-primary hover:bg-transparent hover:text-primary transition-all duration-500" />
+            
             
             <div className="mt-8 pt-8 border-t border-border flex justify-between items-center font-sans text-xs uppercase tracking-widest text-muted-foreground">
               <span>Need Assistance?</span>

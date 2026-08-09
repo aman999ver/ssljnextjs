@@ -2,6 +2,7 @@
 
 import React from "react";
 import { calculatePrice } from "@/lib/utils";
+import { AddToCartButton } from "@/components/shared/AddToCartButton";
 
 interface ProductCardProps {
   name: string;
@@ -22,35 +23,6 @@ export function ProductCard({
   name, slug, price, metalType, weight, lossType, lossValue, makingCharge, imageUrl, category, rates, taxes 
 }: ProductCardProps) {
   
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
-    try {
-      const res = await fetch(`${backendUrl}/api/cart/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ productId: slug, quantity: 1 }) // Using slug as ID for simplicity
-      });
-      
-      if (res.ok) {
-        alert("Added to cart!");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const displayPrice = calculatePrice({ price, metalType, weight, lossType, lossValue, makingCharge }, rates, taxes);
 
   return (
@@ -92,12 +64,7 @@ export function ProductCard({
           </p>
         )}
         
-        <button 
-          onClick={handleAddToCart}
-          className="w-full py-3 border border-border text-xs uppercase tracking-widest text-foreground hover:bg-foreground hover:text-background transition-colors duration-300"
-        >
-          Add to Cart
-        </button>
+        <AddToCartButton productId={slug} variant="ghost" />
       </div>
     </div>
   );

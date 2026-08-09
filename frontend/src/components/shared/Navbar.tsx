@@ -1,8 +1,46 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { User, ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function Navbar() {
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
+      try {
+        const res = await fetch(`${backendUrl}/api/cart`, { headers: { "Authorization": `Bearer ${token}` } });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.items) {
+            setCartCount(data.items.reduce((acc: number, item: any) => acc + item.quantity, 0));
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch cart count:", error);
+      }
+    };
+
+    fetchCartCount();
+
+    const handleCartUpdate = (e: any) => {
+      if (e.detail && typeof e.detail.addedQuantity === 'number') {
+        setCartCount(prev => prev + e.detail.addedQuantity);
+      } else {
+        fetchCartCount();
+      }
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, []);
+
   return (
     <nav className="border-b border-border py-6 px-8 flex justify-between items-center bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <Link href="/" className="flex items-center gap-4">
@@ -24,8 +62,13 @@ export function Navbar() {
           <Link href="/login" className="text-foreground hover:text-primary transition-colors" title="Account / Login">
             <User className="w-5 h-5 font-light" />
           </Link>
-          <Link href="/cart" className="text-foreground hover:text-primary transition-colors" title="Shopping Cart">
+          <Link href="/cart" className="relative text-foreground hover:text-primary transition-colors" title="Shopping Cart">
             <ShoppingBag className="w-5 h-5 font-light" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-sans">
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>
