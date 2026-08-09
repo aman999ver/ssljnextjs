@@ -155,9 +155,7 @@ export default function AdminPage() {
 
   return (
     <main className="flex flex-col min-h-screen bg-background relative">
-      <Navbar />
-
-      <section className="py-24 px-8 max-w-7xl mx-auto w-full flex-grow">
+      <section className="py-12 px-8 max-w-7xl mx-auto w-full flex-grow">
         <div className="flex justify-between items-center mb-12">
           <h1 className="font-heading text-5xl font-normal text-foreground">Admin Dashboard</h1>
           <Button 

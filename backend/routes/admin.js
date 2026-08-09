@@ -35,9 +35,10 @@ router.get('/seed', async (req, res) => {
 
 router.use(authMiddleware, adminMiddleware);
 
+// Get all customers (Admin view)
 router.get('/customers', async (req, res) => {
   try {
-    const customers = await User.find({ role: 'customer' }).select('-password').sort({ createdAt: -1 });
+    const customers = await User.find({ role: { $ne: 'admin' } }).select('-password').sort({ createdAt: -1 });
     res.json(customers);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch customers' });

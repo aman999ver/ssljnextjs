@@ -42,7 +42,6 @@ export default function AdminLoginPage() {
 
   return (
     <main className="flex flex-col min-h-screen bg-background">
-      <Navbar />
       <section className="py-24 px-8 max-w-md mx-auto w-full flex-grow flex items-center">
         <div className="bg-muted/50 p-10 w-full border border-border/50">
           <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 block text-center">

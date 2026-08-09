@@ -21,7 +21,7 @@ export function Navbar() {
 
         {/* Action Icons */}
         <div className="flex items-center space-x-6">
-          <Link href="/admin" className="text-foreground hover:text-primary transition-colors" title="Account / Admin">
+          <Link href="/login" className="text-foreground hover:text-primary transition-colors" title="Account / Login">
             <User className="w-5 h-5 font-light" />
           </Link>
           <Link href="/cart" className="text-foreground hover:text-primary transition-colors" title="Shopping Cart">
