@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { User, ShoppingBag } from "lucide-react";
 
 export function Navbar() {
   return (

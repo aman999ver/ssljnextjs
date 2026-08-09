@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,7 +19,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
-    const body = isLogin ? { email, password } : { name, email, password };
+    const body = isLogin ? { email, password } : { firstName, lastName, phone, email, password };
 
     try {
       const res = await fetch(`${backendUrl}${endpoint}`, {
@@ -30,11 +32,9 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(data.error || "Authentication failed");
       } else {
-        // Securely store token
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         
-        // Redirect based on role
         if (data.user.role === 'admin') {
           window.location.href = "/admin";
         } else {
@@ -66,16 +66,40 @@ export default function LoginPage() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {!isLogin && (
-              <div>
-                <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Full Name</label>
-                <input 
-                  type="text" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
-                  placeholder="Your Name" 
-                  required={!isLogin}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">First Name</label>
+                  <input 
+                    type="text" 
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                    placeholder="First Name" 
+                    required={!isLogin}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Last Name</label>
+                  <input 
+                    type="text" 
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                    placeholder="Last Name" 
+                    required={!isLogin}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Phone Number</label>
+                  <input 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                    placeholder="Your Phone Number" 
+                    required={!isLogin}
+                  />
+                </div>
               </div>
             )}
             <div>
