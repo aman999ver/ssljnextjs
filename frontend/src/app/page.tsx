@@ -58,14 +58,14 @@ export default async function Home() {
     <main className="flex flex-col min-h-screen">
       {/* 1. Announcement Bar */}
       <div className="bg-foreground text-background py-2 text-center text-xs tracking-widest uppercase font-sans font-light">
-        Free secure delivery across Biratnagar on orders over NPR 50,000
+        Free delivery across Biratnagar on orders over NPR 50,000
       </div>
 
       {/* 2. Elegant Navigation */}
       <Navbar />
 
       {/* 3. Hero Section (Dynamic Banner Slideshow) */}
-      <section className="relative h-[80vh] flex items-center justify-center bg-muted overflow-hidden">
+      <section className="relative h-[60vh] md:h-[80vh] flex items-center justify-center bg-muted overflow-hidden">
         {hasBanners && dbData.banners.map((banner: any, index: number) => (
           <img
             key={banner._id || index}
@@ -96,7 +96,7 @@ export default async function Home() {
         ))}
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
-        <div className="relative z-10 text-center px-4 md:px-8 max-w-4xl mx-auto flex flex-col items-center w-full">
+        <div className="relative z-10 text-center px-4 md:px-8 max-w-4xl mx-auto flex flex-col items-center w-full pt-12 md:pt-0">
           <span className="font-sans text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-primary mb-4 md:mb-6 animate-fade-in-up opacity-0">Legacy of Purity in Nepal</span>
           <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-normal text-white mb-6 md:mb-8 leading-tight animate-fade-in-up opacity-0 animate-delay-100 px-2">
             Crafting Timeless Elegance
