@@ -2,8 +2,9 @@ import { RateCard } from "@/components/shared/RateCard";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Navbar } from "@/components/shared/Navbar";
 import Link from "next/link";
-
 import { Metadata } from 'next';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Home",
