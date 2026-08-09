@@ -21,10 +21,12 @@ mongoose.connect(MONGODB_URI, { family: 4 })
 const authRoutes = require('./routes/auth');
 const cartRoutes = require('./routes/cart');
 const adminRoutes = require('./routes/admin');
+const uploadRoutes = require('./routes/upload');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/upload', uploadRoutes);
 
 // --- API Endpoints ---
 

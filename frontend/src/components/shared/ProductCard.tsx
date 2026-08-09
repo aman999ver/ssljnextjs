@@ -5,12 +5,22 @@ import React from "react";
 interface ProductCardProps {
   name: string;
   slug: string;
-  price?: number;
+  price?: number; // legacy static price
+  metalType?: string;
+  weight?: number;
+  lossType?: string;
+  lossValue?: number;
+  makingCharge?: number;
+  tax?: number;
   imageUrl?: string;
   category?: string;
+  rates?: any; // The fetched live rates
 }
 
-export function ProductCard({ name, slug, price, imageUrl, category }: ProductCardProps) {
+export function ProductCard({ 
+  name, slug, price, metalType, weight, lossType, lossValue, makingCharge, tax, imageUrl, category, rates 
+}: ProductCardProps) {
+  
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -40,6 +50,36 @@ export function ProductCard({ name, slug, price, imageUrl, category }: ProductCa
     }
   };
 
+  // Dynamic Price Calculation
+  let displayPrice = price || 0;
+  
+  if (weight && metalType && rates) {
+    const gold24k = rates.offset?.final_gold_rate || 0;
+    const gold22k = Math.round(gold24k * 0.92);
+    const silver = rates.offset?.final_silver_rate || 0;
+    
+    let metalRate = 0;
+    if (metalType === '24K') metalRate = gold24k;
+    else if (metalType === '22K') metalRate = gold22k;
+    else if (metalType === 'Silver') metalRate = silver;
+
+    if (metalRate > 0) {
+      let totalGrams = weight;
+      if (lossType === 'grams') {
+        totalGrams += (lossValue || 0);
+      } else if (lossType === 'percentage') {
+        totalGrams += (weight * ((lossValue || 0) / 100));
+      }
+      
+      const tolas = totalGrams / 11.664;
+      const metalCost = tolas * metalRate;
+      const subtotal = metalCost + (makingCharge || 0);
+      const finalRate = subtotal + (subtotal * ((tax || 0) / 100));
+      
+      displayPrice = Math.round(finalRate);
+    }
+  }
+
   return (
     <div className="group block cursor-pointer transition-all duration-300 hover:-translate-y-1" onClick={() => window.location.href = `/product/${slug}`}>
       <div className="relative aspect-[4/5] bg-muted/20 overflow-hidden mb-6 shadow-sm group-hover:shadow-xl transition-shadow duration-300">
@@ -59,32 +99,32 @@ export function ProductCard({ name, slug, price, imageUrl, category }: ProductCa
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
       </div>
       
-      <div className="flex flex-col space-y-2 px-1">
+      <div className="flex flex-col space-y-2 px-1 text-center">
         {category && (
           <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            {category}
+            {category} {metalType ? `| ${metalType}` : ''}
           </span>
         )}
         <h3 className="font-heading text-xl text-foreground font-normal leading-tight group-hover:text-primary transition-colors duration-300">
           {name}
         </h3>
-        <div className="pt-2 flex justify-between items-center">
-          {price ? (
-            <span className="font-sans text-sm tracking-wide text-foreground">
-              NPR {price.toLocaleString()}
-            </span>
-          ) : (
-            <span className="font-sans text-sm tracking-wide text-muted-foreground italic">
-              Price upon request
-            </span>
-          )}
-          <button 
-            onClick={handleAddToCart}
-            className="font-sans text-[10px] uppercase tracking-widest text-primary border border-primary px-3 py-1 hover:bg-primary hover:text-primary-foreground transition-colors"
-          >
-            Add to Cart
-          </button>
-        </div>
+        
+        {displayPrice > 0 ? (
+          <p className="font-sans text-sm tracking-wide text-foreground mb-4">
+            NPR {displayPrice.toLocaleString()}
+          </p>
+        ) : (
+          <p className="font-sans text-sm tracking-wide text-muted-foreground italic mb-4">
+            Price upon request
+          </p>
+        )}
+        
+        <button 
+          onClick={handleAddToCart}
+          className="w-full py-3 border border-border text-xs uppercase tracking-widest text-foreground hover:bg-foreground hover:text-background transition-colors duration-300"
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   );

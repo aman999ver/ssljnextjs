@@ -111,8 +111,8 @@ export default async function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {dbData.products.map((product) => (
-              <ProductCard key={product.slug} {...product} />
+            {dbData.products.map((product: any) => (
+              <ProductCard key={product.slug} {...product} rates={ratesData} />
             ))}
           </div>
         )}

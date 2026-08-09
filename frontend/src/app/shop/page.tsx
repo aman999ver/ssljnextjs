@@ -14,8 +14,21 @@ async function getProducts() {
   }
 }
 
+// Fetch Live Rates
+async function getRates() {
+  const apiUrl = process.env.NEXT_PUBLIC_RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar";
+  try {
+    const res = await fetch(apiUrl, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    return res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
 export default async function ShopPage() {
   const products = await getProducts();
+  const rates = await getRates();
 
   return (
     <main className="flex flex-col min-h-screen bg-background">
@@ -47,8 +60,8 @@ export default async function ShopPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-            {products.map((product) => (
-              <ProductCard key={product.slug} {...product} />
+            {products.map((product: any) => (
+              <ProductCard key={product.slug} {...product} rates={rates} />
             ))}
           </div>
         )}

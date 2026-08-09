@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/User');
 const Banner = require('../models/Banner');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
@@ -55,6 +56,36 @@ router.post('/banners', async (req, res) => {
     res.json(banner);
   } catch (error) {
     res.status(500).json({ error: 'Failed to add banner' });
+  }
+});
+
+// --- Category Management ---
+
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await Category.find({}).sort({ createdAt: -1 });
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+router.post('/categories', async (req, res) => {
+  try {
+    const category = new Category(req.body);
+    await category.save();
+    res.json(category);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+});
+
+router.delete('/categories/:id', async (req, res) => {
+  try {
+    await Category.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Category deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete category' });
   }
 });
 
