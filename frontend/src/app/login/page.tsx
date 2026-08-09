@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import { Button } from "@/components/ui/button";
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +16,29 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      const res = await fetch(`${backendUrl}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: credentialResponse.credential, payload: decoded })
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.location.href = data.user.role === 'admin' ? "/admin" : "/";
+      } else {
+        setError(data.error || "Google login failed on backend");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Google authentication failed");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +63,7 @@ export default function LoginPage() {
         if (data.user.role === 'admin') {
           window.location.href = "/admin";
         } else {
-          window.location.href = "/shop";
+          window.location.href = "/";
         }
       }
     } catch (err) {
@@ -58,6 +83,18 @@ export default function LoginPage() {
             {isLogin ? "Sign In" : "Create Account"}
           </h1>
           
+          <div className="flex justify-center mb-6">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google login failed")}
+            />
+          </div>
+          
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border"></div></div>
+            <div className="relative flex justify-center text-xs uppercase tracking-widest"><span className="bg-background px-2 text-muted-foreground">or</span></div>
+          </div>
+
           {error && (
             <div className="bg-destructive/10 text-destructive text-sm font-sans tracking-widest p-4 mb-6 uppercase text-center">
               {error}

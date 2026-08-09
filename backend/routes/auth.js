@@ -57,5 +57,62 @@ router.put('/password', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Failed to update password' });
   }
 });
+router.post('/google', async (req, res) => {
+  try {
+    const { token } = req.body;
+    // In a real app, verify the Google token using google-auth-library.
+    // For now, assume the client sends the decoded payload (email, name, picture, sub).
+    const { email, name, sub } = req.body.payload; 
 
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      // Register new user via Google
+      const names = name ? name.split(' ') : ['User', ''];
+      user = new User({
+        firstName: names[0],
+        lastName: names.slice(1).join(' ') || '',
+        email: email,
+        password: await bcrypt.hash(sub || Math.random().toString(), 10), // dummy pass
+        role: 'customer'
+      });
+      await user.save();
+    }
+
+    const userName = `${user.firstName} ${user.lastName}`;
+    const jwtToken = jwt.sign({ id: user._id, role: user.role, name: userName }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token: jwtToken, user: { id: user._id, name: userName, role: user.role } });
+  } catch (error) {
+    res.status(500).json({ error: 'Google login failed' });
+  }
+});
+
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.put('/profile', authMiddleware, async (req, res) => {
+  try {
+    const { firstName, lastName, phone, address } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (phone) user.phone = phone;
+    if (address) user.address = address;
+
+    await user.save();
+    res.json({ message: 'Profile updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
 module.exports = router;

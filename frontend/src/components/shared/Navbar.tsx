@@ -7,8 +7,11 @@ import { useEffect, useState } from "react";
 
 export function Navbar() {
   const [cartCount, setCartCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
+    
     const fetchCartCount = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -59,7 +62,7 @@ export function Navbar() {
 
         {/* Action Icons */}
         <div className="flex items-center space-x-6">
-          <Link href="/login" className="text-foreground hover:text-primary transition-colors" title="Account / Login">
+          <Link href={isLoggedIn ? "/profile" : "/login"} className="text-foreground hover:text-primary transition-colors" title="Account / Profile">
             <User className="w-5 h-5 font-light" />
           </Link>
           <Link href="/cart" className="relative text-foreground hover:text-primary transition-colors" title="Shopping Cart">

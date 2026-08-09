@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Jost } from "next/font/google";
 import "./globals.css";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -23,7 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${playfair.variable} ${jost.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+          {children}
+        </GoogleOAuthProvider>
+      </body>
     </html>
   );
 }

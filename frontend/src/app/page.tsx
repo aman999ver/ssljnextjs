@@ -55,10 +55,10 @@ export default async function Home() {
   const hasBanners = dbData.banners && dbData.banners.length > 0;
 
   return (
-    <main className="flex flex-col min-h-screen">
+      <main className="flex flex-col min-h-screen">
       {/* 1. Announcement Bar */}
       <div className="bg-foreground text-background py-2 text-center text-xs tracking-widest uppercase font-sans font-light">
-        Free secure delivery across Biratnagar on orders over NPR 50,000
+        Free secure delivery across Nepal on orders over NPR 50,000
       </div>
 
       {/* 2. Elegant Navigation */}
@@ -71,18 +71,18 @@ export default async function Home() {
             key={banner._id || index}
             src={banner.image || banner.imageUrl} 
             alt="Banner" 
-            className="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-overlay animate-fade-in-up" 
+            className="absolute inset-0 w-full h-full object-cover animate-fade-in-up" 
             style={{ 
               animationDuration: '1.5s',
-              opacity: index === 0 ? 0.7 : 0, // This is a static fallback, a real client-side slider would be better, but this gets the image up.
+              opacity: index === 0 ? 1 : 0, 
             }} 
           />
         ))}
         {hasBanners && dbData.banners.length > 1 && (
           <style dangerouslySetInnerHTML={{__html: `
-            .banner-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: overlay; opacity: 0; animation: slideShow ${dbData.banners.length * 5}s infinite; }
+            .banner-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; animation: slideShow ${dbData.banners.length * 5}s infinite; }
             ${dbData.banners.map((_:any, i:number) => `.banner-slide:nth-child(${i+1}) { animation-delay: ${i * 5}s; }`).join('\n')}
-            @keyframes slideShow { 0% { opacity: 0; } 10% { opacity: 0.7; } ${100/dbData.banners.length}% { opacity: 0.7; } ${(100/dbData.banners.length)+10}% { opacity: 0; } 100% { opacity: 0; } }
+            @keyframes slideShow { 0% { opacity: 0; } 10% { opacity: 1; } ${100/dbData.banners.length}% { opacity: 1; } ${(100/dbData.banners.length)+10}% { opacity: 0; } 100% { opacity: 0; } }
           `}} />
         )}
         {hasBanners && dbData.banners.length > 1 && dbData.banners.map((banner: any, index: number) => (
@@ -94,13 +94,13 @@ export default async function Home() {
           />
         ))}
 
-        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/10 to-background/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
-          <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 animate-fade-in-up opacity-0">Legacy of Purity</span>
-          <h1 className="font-heading text-5xl md:text-7xl font-normal text-foreground mb-8 leading-tight animate-fade-in-up opacity-0 animate-delay-100">
-            Crafting Timeless Elegance in Biratnagar
+          <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 animate-fade-in-up opacity-0">Legacy of Purity in Nepal</span>
+          <h1 className="font-heading text-5xl md:text-7xl font-normal text-white mb-8 leading-tight animate-fade-in-up opacity-0 animate-delay-100">
+            Crafting Timeless Elegance
           </h1>
-          <Link href="/shop" className="inline-block border border-foreground bg-foreground/5 backdrop-blur-sm px-12 py-4 font-sans text-sm tracking-widest uppercase hover:bg-foreground hover:text-background transition-all duration-500 animate-fade-in-up opacity-0 animate-delay-200">
+          <Link href="/shop" className="inline-block border border-white text-white bg-black/20 backdrop-blur-sm px-12 py-4 font-sans text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-500 animate-fade-in-up opacity-0 animate-delay-200">
             Explore the Collection
           </Link>
         </div>
@@ -163,7 +163,7 @@ export default async function Home() {
           <div className="md:col-span-2">
             <h3 className="font-heading text-2xl uppercase tracking-widest text-primary mb-6">Shree Shubha Laxmi</h3>
             <p className="font-sans text-sm font-light leading-relaxed max-w-sm opacity-80">
-              A trusted name in Biratnagar for pure gold and silver jewellery. We craft pieces that celebrate life's most precious moments.
+              A trusted name in Nepal for pure gold and silver jewellery. We craft pieces that celebrate life's most precious moments.
             </p>
           </div>
           <div>
