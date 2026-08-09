@@ -6,7 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function calculatePrice(product: any, rates: any, taxes: any) {
-  if (!product || !product.weight || !product.metalType || !rates) return product?.price || 0;
+  if (!product || !rates) return product?.price || 0;
+  
+  if (product.priceMode === 'static') {
+    return product.price || 0;
+  }
+
+  if (!product.weight || !product.metalType) return product.price || 0;
   
   const gold24k = rates.offset?.final_gold_rate || 0;
   const gold22k = Math.round(gold24k * 0.92);

@@ -9,6 +9,8 @@ const ProductSchema = new mongoose.Schema({
   lossType: { type: String, enum: ['percentage', 'grams', 'none'], default: 'none' },
   lossValue: { type: Number, default: 0 },
   makingCharge: { type: Number, default: 0 },
+  priceMode: { type: String, enum: ['dynamic', 'static'], default: 'dynamic' },
+  price: { type: Number, default: 0 },
   tax: { type: Number, default: 0 },
   images: { type: [String], default: [] },
   isActive: { type: Boolean, default: true },

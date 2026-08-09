@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2, Edit, Upload, ChevronLeft, ChevronRight } from "lucide-react";
+import { calculatePrice } from "@/lib/utils";
 
 export default function AdminPage() {
   const [customers, setCustomers] = useState([]);
@@ -10,6 +11,7 @@ export default function AdminPage() {
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
   const [settings, setSettings] = useState<any[]>([]);
+  const [rates, setRates] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("products");
 
@@ -54,6 +56,21 @@ export default function AdminPage() {
     }
 
     try {
+      if (!rates) {
+        const ratesApi = process.env.NEXT_PUBLIC_RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar";
+        fetch(ratesApi).then(r => r.json()).then(d => setRates(d)).catch(e => console.error("Rates fetch error", e));
+        
+        // Also fetch tax settings globally for the preview
+        const setRes = await fetch(`${backendUrl}/api/admin/settings`, { headers: { "Authorization": `Bearer ${token}` } });
+        if (setRes.ok) {
+          const d = await setRes.json();
+          setTaxSettings({
+            goldTax: d.find((s:any) => s.key === "goldTax")?.value || 0,
+            silverTax: d.find((s:any) => s.key === "silverTax")?.value || 0
+          });
+        }
+      }
+
       if (tab === "products") await fetchProducts(token);
       else if (tab === "customers") await fetchCustomers(token);
       else if (tab === "categories") await fetchCategories(token);
@@ -200,7 +217,7 @@ export default function AdminPage() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="font-sans text-xl uppercase tracking-widest text-foreground">Product Catalog</h2>
-              <Button onClick={() => { setEditingId(null); setProductForm({ name: "", description: "", category: "", metalType: "22K", weight: 0, lossType: "none", lossValue: 0, makingCharge: 0, imageUrl: "", isActive: true, featured: false }); setShowProductModal(true); }} className="bg-foreground text-background uppercase tracking-widest text-xs py-5 px-6">+ Add Product</Button>
+              <Button onClick={() => { setEditingId(null); setProductForm({ name: "", description: "", category: "", metalType: "22K", weight: 0, lossType: "none", lossValue: 0, makingCharge: 0, priceMode: "dynamic", price: 0, imageUrl: "", isActive: true, featured: false }); setShowProductModal(true); }} className="bg-foreground text-background uppercase tracking-widest text-xs py-5 px-6">+ Add Product</Button>
             </div>
             <div className="overflow-x-auto bg-muted/10 border border-border/50">
               <table className="w-full text-left font-sans text-sm">
@@ -215,7 +232,7 @@ export default function AdminPage() {
                       <td className="px-6 py-4 text-muted-foreground">{p.category}</td>
                       <td className="px-6 py-4 text-muted-foreground">{p.weight}g</td>
                       <td className="px-6 py-4 text-right space-x-4">
-                        <button onClick={() => { setEditingId(p._id); setProductForm({ name: p.name||"", description: p.description||"", category: p.category||"", metalType: p.metalType||"22K", weight: p.weight||0, lossType: p.lossType||"none", lossValue: p.lossValue||0, makingCharge: p.makingCharge||0, imageUrl: p.images?.[0]||"", isActive: p.isActive??true, featured: p.featured??false }); setShowProductModal(true); }} className="text-muted-foreground hover:text-primary"><Edit size={16}/></button>
+                        <button onClick={() => { setEditingId(p._id); setProductForm({ name: p.name||"", description: p.description||"", category: p.category||"", metalType: p.metalType||"22K", weight: p.weight||0, lossType: p.lossType||"none", lossValue: p.lossValue||0, makingCharge: p.makingCharge||0, priceMode: p.priceMode||"dynamic", price: p.price||0, imageUrl: p.images?.[0]||"", isActive: p.isActive??true, featured: p.featured??false }); setShowProductModal(true); }} className="text-muted-foreground hover:text-primary"><Edit size={16}/></button>
                         <button onClick={() => deleteProduct(p._id)} className="text-muted-foreground hover:text-destructive"><Trash2 size={16}/></button>
                       </td>
                     </tr>
@@ -446,16 +463,52 @@ export default function AdminPage() {
                     <option value="24K">24K Gold</option><option value="22K">22K Gold</option><option value="Silver">Silver</option>
                   </select>
                 </div>
-                <div><label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Weight (g)</label><input type="number" step="0.01" required value={productForm.weight||''} onChange={e => setProductForm({...productForm, weight: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none" /></div>
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Loss Type</label>
-                  <select required value={productForm.lossType} onChange={e => setProductForm({...productForm, lossType: e.target.value})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none">
-                    <option value="none">No Loss</option><option value="percentage">%</option><option value="grams">Grams</option>
-                  </select>
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Description</label>
+                  <textarea rows={2} value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none resize-none"></textarea>
                 </div>
-                <div><label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Loss Value</label><input type="number" step="0.01" value={productForm.lossValue||''} onChange={e => setProductForm({...productForm, lossValue: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none" disabled={productForm.lossType === "none"} /></div>
-                <div><label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Making Charge (NPR)</label><input type="number" value={productForm.makingCharge||''} onChange={e => setProductForm({...productForm, makingCharge: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none" /></div>
+                
+                <div className="col-span-1 md:col-span-2 mt-4 pt-4 border-t border-border/50">
+                  <h3 className="font-sans text-sm uppercase tracking-widest mb-4">Pricing Configuration</h3>
+                  <div className="flex gap-4 mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer text-sm">
+                      <input type="radio" checked={productForm.priceMode === 'dynamic'} onChange={() => setProductForm({...productForm, priceMode: 'dynamic'})} /> Dynamic (Calculated)
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer text-sm">
+                      <input type="radio" checked={productForm.priceMode === 'static'} onChange={() => setProductForm({...productForm, priceMode: 'static'})} /> Static (Fixed Price)
+                    </label>
+                  </div>
+                </div>
+
+                {productForm.priceMode === 'static' ? (
+                  <div className="col-span-1 md:col-span-2">
+                    <label className="block text-[10px] uppercase tracking-widest mb-1 text-primary">Fixed Price (NPR)</label>
+                    <input type="number" step="1" required value={productForm.price||''} onChange={e => setProductForm({...productForm, price: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-primary py-2 px-2 text-sm outline-none" />
+                  </div>
+                ) : (
+                  <>
+                    <div><label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Weight (g)</label><input type="number" step="0.01" required={productForm.priceMode === 'dynamic'} value={productForm.weight||''} onChange={e => setProductForm({...productForm, weight: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none" /></div>
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Loss Type</label>
+                      <select required={productForm.priceMode === 'dynamic'} value={productForm.lossType} onChange={e => setProductForm({...productForm, lossType: e.target.value})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none">
+                        <option value="none">No Loss</option><option value="percentage">%</option><option value="grams">Grams</option>
+                      </select>
+                    </div>
+                    <div><label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Loss Value</label><input type="number" step="0.01" value={productForm.lossValue||''} onChange={e => setProductForm({...productForm, lossValue: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none" disabled={productForm.lossType === "none"} /></div>
+                    <div><label className="block text-[10px] uppercase tracking-widest mb-1 text-muted-foreground">Making Charge (NPR)</label><input type="number" value={productForm.makingCharge||''} onChange={e => setProductForm({...productForm, makingCharge: Number(e.target.value)})} className="w-full bg-muted/20 border-b border-border py-2 px-2 text-sm outline-none" /></div>
+                  </>
+                )}
               </div>
+              
+              {rates && (
+                <div className="bg-primary/5 border border-primary/20 p-4 mt-6 flex justify-between items-center">
+                  <span className="font-sans text-xs uppercase tracking-widest text-primary">Live Price Preview:</span>
+                  <span className="font-heading text-2xl">
+                    NPR {calculatePrice(productForm, rates, taxSettings).toLocaleString()}
+                  </span>
+                </div>
+              )}
+
               <Button type="submit" disabled={uploadingImage} className="w-full bg-foreground text-background uppercase tracking-widest py-6 mt-4">Save Product</Button>
             </form>
           </div>
