@@ -223,4 +223,25 @@ router.put('/orders/:id/status', async (req, res) => {
   }
 });
 
+// --- Enquiry Management ---
+const Enquiry = require('../models/Enquiry');
+
+router.get('/enquiries', async (req, res) => {
+  try {
+    const result = await paginate(Enquiry, {}, req, { createdAt: -1 });
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch enquiries' });
+  }
+});
+
+router.delete('/enquiries/:id', async (req, res) => {
+  try {
+    await Enquiry.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Enquiry deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete enquiry' });
+  }
+});
+
 module.exports = router;

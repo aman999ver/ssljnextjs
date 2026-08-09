@@ -1,5 +1,5 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
+const Enquiry = require('../models/Enquiry');
 
 const router = express.Router();
 
@@ -10,59 +10,14 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Name, email, and message are required.' });
   }
 
-  // Create transporter using environment variables
-  // The user will need to supply EMAIL_USER and EMAIL_PASS in the backend .env
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: process.env.EMAIL_USER || 'geniusappsolu@gmail.com',
-      pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 10000, // 10 seconds timeout
-    greetingTimeout: 5000,
-    socketTimeout: 10000
-  });
-
-  const mailOptions = {
-    from: `"${name}" <${email}>`, // sender address
-    to: process.env.EMAIL_USER || 'geniusappsolu@gmail.com', // list of receivers
-    replyTo: email,
-    subject: `New Customer Enquiry from ${name}`, // Subject line
-    text: `
-      You have received a new message from your website contact form.
-      
-      Name: ${name}
-      Email: ${email}
-      Phone: ${phone || 'Not provided'}
-      
-      Message:
-      ${message}
-    `, 
-    html: `
-      <h3>New Customer Enquiry</h3>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-      <hr/>
-      <p><strong>Message:</strong></p>
-      <p>${message.replace(/\n/g, '<br>')}</p>
-    `
-  };
-
   try {
-    if (!process.env.EMAIL_PASS) {
-      console.warn("EMAIL_PASS is not set. Simulating successful email send for development.");
-      return res.status(200).json({ message: 'Message successfully sent (simulated)' });
-    }
-
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Message successfully sent' });
+    const newEnquiry = new Enquiry({ name, email, phone, message });
+    await newEnquiry.save();
+    
+    res.status(200).json({ message: 'Enquiry saved successfully' });
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ error: `Failed to send message: ${error.message}` });
+    console.error('Error saving enquiry:', error);
+    res.status(500).json({ error: 'Failed to submit your enquiry. Please try again later.' });
   }
 });
 
