@@ -226,6 +226,42 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* CUSTOMERS TAB */}
+        {tab === "customers" && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-sans text-xl uppercase tracking-widest text-foreground">Customers</h2>
+            </div>
+            <div className="overflow-x-auto bg-muted/10 border border-border/50">
+              <table className="w-full text-left font-sans text-sm">
+                <thead className="text-xs uppercase tracking-widest text-muted-foreground border-b border-border bg-muted/30">
+                  <tr>
+                    <th className="px-6 py-4 font-normal">Name</th>
+                    <th className="px-6 py-4 font-normal">Email</th>
+                    <th className="px-6 py-4 font-normal">Phone</th>
+                    <th className="px-6 py-4 font-normal">Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customers.map((c: any) => (
+                    <tr key={c._id} className="border-b border-border/30 hover:bg-muted/20">
+                      <td className="px-6 py-4 text-foreground">{c.firstName} {c.lastName}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{c.email}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{c.phone || "N/A"}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                  {customers.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-4 text-center text-muted-foreground">No customers found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* CATEGORIES TAB */}
         {tab === "categories" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
