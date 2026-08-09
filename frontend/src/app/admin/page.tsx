@@ -68,22 +68,22 @@ export default function AdminPage() {
 
   const fetchCustomers = async (token: string) => {
     const res = await fetch(`${backendUrl}/api/admin/customers?page=${page}`, { headers: { "Authorization": `Bearer ${token}` } });
-    if (res.ok) { const d = await res.json(); setCustomers(d.data); setTotalPages(d.pagination.pages); }
+    if (res.ok) { const d = await res.json(); setCustomers(d.data || d); setTotalPages(d.pagination?.pages || 1); }
   };
 
   const fetchProducts = async (token: string) => {
     const res = await fetch(`${backendUrl}/api/admin/products?page=${page}`, { headers: { "Authorization": `Bearer ${token}` } });
-    if (res.ok) { const d = await res.json(); setProducts(d.data); setTotalPages(d.pagination.pages); }
+    if (res.ok) { const d = await res.json(); setProducts(d.data || d); setTotalPages(d.pagination?.pages || 1); }
   };
 
   const fetchCategories = async (token: string) => {
     const res = await fetch(`${backendUrl}/api/admin/categories?page=${page}`, { headers: { "Authorization": `Bearer ${token}` } });
-    if (res.ok) { const d = await res.json(); setCategories(d.data); setTotalPages(d.pagination.pages); }
+    if (res.ok) { const d = await res.json(); setCategories(d.data || d); setTotalPages(d.pagination?.pages || 1); }
   };
 
   const fetchOrders = async (token: string) => {
     const res = await fetch(`${backendUrl}/api/admin/orders?page=${page}`, { headers: { "Authorization": `Bearer ${token}` } });
-    if (res.ok) { const d = await res.json(); setOrders(d.data); setTotalPages(d.pagination.pages); }
+    if (res.ok) { const d = await res.json(); setOrders(d.data || d); setTotalPages(d.pagination?.pages || 1); }
   };
 
   const fetchSettings = async (token: string) => {
