@@ -48,6 +48,7 @@ app.get('/api/products', async (req, res) => {
     
     // Defensive mapping for frontend
     const products = rawProducts.map((p) => ({
+      ...p,
       slug: p.slug || p._id.toString(),
       name: p.name || p.productName || p.title || "Unnamed Product",
       price: p.price || p.productPrice || null,
@@ -58,6 +59,31 @@ app.get('/api/products', async (req, res) => {
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+// Get single product by slug or id
+app.get('/api/products/:slug', async (req, res) => {
+  try {
+    let p = await Product.findOne({ slug: req.params.slug }).lean();
+    if (!p && mongoose.Types.ObjectId.isValid(req.params.slug)) {
+      p = await Product.findById(req.params.slug).lean();
+    }
+    
+    if (!p) return res.status(404).json({ error: 'Product not found' });
+    
+    const product = {
+      ...p,
+      slug: p.slug || p._id.toString(),
+      name: p.name || p.productName || p.title || "Unnamed Product",
+      price: p.price || p.productPrice || null,
+      category: p.category || p.categoryName || null,
+      imageUrl: p.image || (p.images && p.images.length > 0 ? p.images[0] : null),
+    };
+    
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch product' });
   }
 });
 

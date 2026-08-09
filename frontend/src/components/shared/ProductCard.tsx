@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { calculatePrice } from "@/lib/utils";
 
 interface ProductCardProps {
   name: string;
@@ -50,37 +51,7 @@ export function ProductCard({
     }
   };
 
-  // Dynamic Price Calculation
-  let displayPrice = price || 0;
-  
-  if (weight && metalType && rates) {
-    const gold24k = rates.offset?.final_gold_rate || 0;
-    const gold22k = Math.round(gold24k * 0.92);
-    const silver = rates.offset?.final_silver_rate || 0;
-    
-    let metalRate = 0;
-    let applicableTax = 0;
-
-    if (metalType === '24K') { metalRate = gold24k; applicableTax = taxes?.goldTax || 0; }
-    else if (metalType === '22K') { metalRate = gold22k; applicableTax = taxes?.goldTax || 0; }
-    else if (metalType === 'Silver') { metalRate = silver; applicableTax = taxes?.silverTax || 0; }
-
-    if (metalRate > 0) {
-      let totalGrams = weight;
-      if (lossType === 'grams') {
-        totalGrams += (lossValue || 0);
-      } else if (lossType === 'percentage') {
-        totalGrams += (weight * ((lossValue || 0) / 100));
-      }
-      
-      const tolas = totalGrams / 11.664;
-      const metalCost = tolas * metalRate;
-      const subtotal = metalCost + (makingCharge || 0);
-      const finalRate = subtotal + (subtotal * (applicableTax / 100));
-      
-      displayPrice = Math.round(finalRate);
-    }
-  }
+  const displayPrice = calculatePrice({ price, metalType, weight, lossType, lossValue, makingCharge }, rates, taxes);
 
   return (
     <div className="group block cursor-pointer transition-all duration-300 hover:-translate-y-1" onClick={() => window.location.href = `/product/${slug}`}>
