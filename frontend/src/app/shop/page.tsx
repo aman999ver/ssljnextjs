@@ -26,9 +26,27 @@ async function getRates() {
   }
 }
 
+// Fetch Settings
+async function getSettings() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
+  try {
+    const res = await fetch(`${backendUrl}/api/settings`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
 export default async function ShopPage() {
   const products = await getProducts();
   const rates = await getRates();
+  const settings = await getSettings();
+  
+  const taxes = {
+    goldTax: settings.find((s: any) => s.key === "goldTax")?.value || 0,
+    silverTax: settings.find((s: any) => s.key === "silverTax")?.value || 0,
+  };
 
   return (
     <main className="flex flex-col min-h-screen bg-background">
@@ -61,7 +79,7 @@ export default async function ShopPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
             {products.map((product: any) => (
-              <ProductCard key={product.slug} {...product} rates={rates} />
+              <ProductCard key={product.slug} {...product} rates={rates} taxes={taxes} />
             ))}
           </div>
         )}

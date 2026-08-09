@@ -20,18 +20,25 @@ async function getRates() {
 async function getDbData() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
   try {
-    // Fetch featured products
-    const prodRes = await fetch(`${backendUrl}/api/products/featured`, { cache: 'no-store' });
-    const products = prodRes.ok ? await prodRes.json() : [];
+    const [productsRes, bannerRes, settingsRes] = await Promise.all([
+      fetch(`${backendUrl}/api/products/featured`, { cache: 'no-store' }),
+      fetch(`${backendUrl}/api/banners/active`, { cache: 'no-store' }),
+      fetch(`${backendUrl}/api/settings`, { cache: 'no-store' })
+    ]);
 
-    // Fetch active banner
-    const bannerRes = await fetch(`${backendUrl}/api/banners/active`, { cache: 'no-store' });
+    const products = productsRes.ok ? await productsRes.json() : [];
     const banner = bannerRes.ok ? await bannerRes.json() : null;
-    
-    return { products, banner };
+    const settings = settingsRes.ok ? await settingsRes.json() : [];
+
+    const taxes = {
+      goldTax: settings.find((s: any) => s.key === "goldTax")?.value || 0,
+      silverTax: settings.find((s: any) => s.key === "silverTax")?.value || 0,
+    };
+
+    return { products, banner, taxes };
   } catch (error) {
     console.error("Failed to fetch from Backend API:", error);
-    return { products: [], banner: null };
+    return { products: [], banner: null, taxes: { goldTax: 0, silverTax: 0 } };
   }
 }
 
@@ -112,7 +119,7 @@ export default async function Home() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {dbData.products.map((product: any) => (
-              <ProductCard key={product.slug} {...product} rates={ratesData} />
+              <ProductCard key={product.slug} {...product} rates={ratesData} taxes={dbData.taxes} />
             ))}
           </div>
         )}

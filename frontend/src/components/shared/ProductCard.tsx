@@ -11,14 +11,14 @@ interface ProductCardProps {
   lossType?: string;
   lossValue?: number;
   makingCharge?: number;
-  tax?: number;
   imageUrl?: string;
   category?: string;
   rates?: any; // The fetched live rates
+  taxes?: { goldTax: number, silverTax: number };
 }
 
 export function ProductCard({ 
-  name, slug, price, metalType, weight, lossType, lossValue, makingCharge, tax, imageUrl, category, rates 
+  name, slug, price, metalType, weight, lossType, lossValue, makingCharge, imageUrl, category, rates, taxes 
 }: ProductCardProps) {
   
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -59,9 +59,11 @@ export function ProductCard({
     const silver = rates.offset?.final_silver_rate || 0;
     
     let metalRate = 0;
-    if (metalType === '24K') metalRate = gold24k;
-    else if (metalType === '22K') metalRate = gold22k;
-    else if (metalType === 'Silver') metalRate = silver;
+    let applicableTax = 0;
+
+    if (metalType === '24K') { metalRate = gold24k; applicableTax = taxes?.goldTax || 0; }
+    else if (metalType === '22K') { metalRate = gold22k; applicableTax = taxes?.goldTax || 0; }
+    else if (metalType === 'Silver') { metalRate = silver; applicableTax = taxes?.silverTax || 0; }
 
     if (metalRate > 0) {
       let totalGrams = weight;
@@ -74,7 +76,7 @@ export function ProductCard({
       const tolas = totalGrams / 11.664;
       const metalCost = tolas * metalRate;
       const subtotal = metalCost + (makingCharge || 0);
-      const finalRate = subtotal + (subtotal * ((tax || 0) / 100));
+      const finalRate = subtotal + (subtotal * (applicableTax / 100));
       
       displayPrice = Math.round(finalRate);
     }

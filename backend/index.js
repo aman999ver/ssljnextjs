@@ -18,6 +18,8 @@ mongoose.connect(MONGODB_URI, { family: 4 })
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
+const Banner = require('./models/Banner');
+const Setting = require('./models/Setting');
 const authRoutes = require('./routes/auth');
 const cartRoutes = require('./routes/cart');
 const adminRoutes = require('./routes/admin');
@@ -29,6 +31,16 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin/upload', uploadRoutes);
 
 // --- API Endpoints ---
+
+// Get all settings
+app.get('/api/settings', async (req, res) => {
+  try {
+    const settings = await Setting.find({}).lean();
+    res.json(settings);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
+});
 
 // Get all products
 app.get('/api/products', async (req, res) => {
