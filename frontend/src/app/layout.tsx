@@ -14,8 +14,20 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "Shree Shubha Laxmi Jewellery",
-  description: "Premium jewellery e-commerce platform in Biratnagar, Nepal.",
+  title: {
+    template: "%s | Shree Subha Laxmi Jewellery",
+    default: "Shree Subha Laxmi Jewellery | Authentic & Pure",
+  },
+  description: "Exquisite 24K and 22K Gold, Silver, and Diamond jewellery in Biratnagar, Nepal. Discover our heritage of purity, trust, and craftsmanship.",
+  metadataBase: new URL('https://subhalaxmijewellery.com.np'),
+  openGraph: {
+    title: "Shree Subha Laxmi Jewellery",
+    description: "Exquisite 24K and 22K Gold, Silver, and Diamond jewellery in Biratnagar.",
+    url: 'https://subhalaxmijewellery.com.np',
+    siteName: 'Shree Subha Laxmi Jewellery',
+    locale: 'en_NP',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

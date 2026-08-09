@@ -1,4 +1,10 @@
 import { Navbar } from "@/components/shared/Navbar";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Our Heritage",
+  description: "Discover the legacy of Shree Subha Laxmi Jewellery. Celebrating craftsmanship, purity, and trust for generations.",
+};
 import Link from "next/link";
 
 export default function HeritagePage() {

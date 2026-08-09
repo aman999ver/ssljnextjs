@@ -3,6 +3,13 @@ import { ProductCard } from "@/components/shared/ProductCard";
 import { Navbar } from "@/components/shared/Navbar";
 import Link from "next/link";
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Welcome to Shree Subha Laxmi Jewellery, Biratnagar's premier destination for pure 24K gold, silver, and diamond jewellery.",
+};
+
 // Fetch Live Rates
 async function getRates() {
   const apiUrl = process.env.NEXT_PUBLIC_RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar";

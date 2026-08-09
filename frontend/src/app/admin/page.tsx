@@ -10,6 +10,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [enquiries, setEnquiries] = useState([]);
   const [settings, setSettings] = useState<any[]>([]);
   const [rates, setRates] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -75,12 +76,18 @@ export default function AdminPage() {
       else if (tab === "customers") await fetchCustomers(token);
       else if (tab === "categories") await fetchCategories(token);
       else if (tab === "orders") await fetchOrders(token);
+      else if (tab === "enquiries") await fetchEnquiries(token);
       else if (tab === "settings") await fetchSettings(token);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchEnquiries = async (token: string) => {
+    const res = await fetch(`${backendUrl}/api/admin/enquiries?page=${page}`, { headers: { "Authorization": `Bearer ${token}` } });
+    if (res.ok) { const d = await res.json(); setEnquiries(d.data || d); setTotalPages(d.pagination?.pages || 1); }
   };
 
   const fetchCustomers = async (token: string) => {
@@ -205,12 +212,59 @@ export default function AdminPage() {
         </div>
 
         <div className="flex gap-8 border-b border-border mb-12 overflow-x-auto pb-2">
-          {["products", "categories", "orders", "customers", "settings"].map(t => (
+          {["products", "categories", "orders", "enquiries", "customers", "settings"].map(t => (
             <button key={t} onClick={() => { setTab(t); setPage(1); }} className={`pb-4 font-sans text-sm tracking-widest uppercase transition-colors whitespace-nowrap ${tab === t ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
               {t}
             </button>
           ))}
         </div>
+
+        {/* ENQUIRIES TAB */}
+        {tab === "enquiries" && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-sans text-xl uppercase tracking-widest text-foreground">Customer Enquiries</h2>
+            </div>
+            <div className="overflow-x-auto bg-muted/10 border border-border/50">
+              <table className="w-full text-left font-sans text-sm">
+                <thead className="text-xs uppercase tracking-widest text-muted-foreground border-b border-border bg-muted/30">
+                  <tr>
+                    <th className="px-6 py-4 font-normal">Date</th>
+                    <th className="px-6 py-4 font-normal">Customer</th>
+                    <th className="px-6 py-4 font-normal">Message</th>
+                    <th className="px-6 py-4 font-normal text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enquiries.map((e: any) => (
+                    <tr key={e._id} className="border-b border-border/30 hover:bg-muted/20">
+                      <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">{new Date(e.createdAt).toLocaleDateString()}</td>
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-foreground">{e.name}</div>
+                        <div className="text-muted-foreground text-xs">{e.email}</div>
+                        <div className="text-muted-foreground text-xs">{e.phone}</div>
+                      </td>
+                      <td className="px-6 py-4 text-foreground whitespace-pre-wrap max-w-md">{e.message}</td>
+                      <td className="px-6 py-4 text-right">
+                        <button onClick={async () => {
+                          if (!confirm("Delete enquiry?")) return;
+                          const token = localStorage.getItem("token");
+                          await fetch(`${backendUrl}/api/admin/enquiries/${e._id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+                          fetchEnquiries(token!);
+                        }} className="text-muted-foreground hover:text-destructive"><Trash2 size={16}/></button>
+                      </td>
+                    </tr>
+                  ))}
+                  {enquiries.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-4 text-center text-muted-foreground">No enquiries found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* PRODUCTS TAB */}
         {tab === "products" && (

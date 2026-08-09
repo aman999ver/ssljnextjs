@@ -1,5 +1,11 @@
 import { Navbar } from "@/components/shared/Navbar";
 import { ProductCard } from "@/components/shared/ProductCard";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Shop Collection",
+  description: "Browse our exquisite collection of necklaces, rings, earrings, and bangles crafted with purity and precision.",
+};
 
 // Fetch Data from Render API
 async function getProducts() {

@@ -42,6 +42,26 @@ async function getProductData(slug: string) {
 }
 
 import { AddToCartButton } from "@/components/shared/AddToCartButton";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const { product } = await getProductData(slug);
+  
+  if (!product) {
+    return { title: 'Product Not Found' };
+  }
+
+  return {
+    title: product.name,
+    description: product.description || `Buy ${product.name} at Shree Subha Laxmi Jewellery.`,
+    openGraph: {
+      title: product.name,
+      description: product.description || `Buy ${product.name} at Shree Subha Laxmi Jewellery.`,
+      images: product.imageUrl ? [product.imageUrl] : [],
+    },
+  };
+}
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
