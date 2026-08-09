@@ -11,7 +11,7 @@ export default function ContactPage() {
     phone: "",
     message: ""
   });
-  
+
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,9 +34,9 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         setStatus("Thank you! Your message has been sent successfully. We will get back to you shortly.");
         setFormData({ name: "", email: "", phone: "", message: "" });
@@ -65,18 +65,18 @@ export default function ContactPage() {
       {/* Content */}
       <section className="py-24 px-8 max-w-6xl mx-auto w-full flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          
+
           {/* Contact Details */}
           <div className="flex flex-col justify-center space-y-12">
             <div>
               <h3 className="font-sans text-xs tracking-widest uppercase text-primary mb-4">Visit Our Store</h3>
               <p className="font-heading text-2xl text-foreground mb-2">Shree Shubha Laxmi Jewellery</p>
               <p className="font-sans font-light text-muted-foreground leading-relaxed">
-                Main Road, Biratnagar<br />
+                Thakurbari Road, Ramjanaki Path, Biratnagar<br />
                 Koshi Province, Nepal
               </p>
             </div>
-            
+
             <div>
               <h3 className="font-sans text-xs tracking-widest uppercase text-primary mb-4">Direct Contact</h3>
               <p className="font-sans text-lg text-foreground mb-2">
@@ -100,52 +100,52 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="bg-muted/30 border border-border/50 p-8 md:p-12">
             <h2 className="font-heading text-3xl text-foreground mb-8">Send an Enquiry</h2>
-            
+
             {status && <div className="mb-8 p-4 bg-primary/10 text-primary font-sans text-xs uppercase tracking-widest text-center">{status}</div>}
             {error && <div className="mb-8 p-4 bg-destructive/10 text-destructive font-sans text-xs uppercase tracking-widest text-center">{error}</div>}
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Full Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm"
                   required
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Email Address</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm"
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Phone (Optional)</label>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm"
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Message</label>
-                <textarea 
+                <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm min-h-[120px]" 
+                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm min-h-[120px]"
                   required
                 />
               </div>
@@ -154,7 +154,7 @@ export default function ContactPage() {
               </Button>
             </form>
           </div>
-          
+
         </div>
       </section>
 
