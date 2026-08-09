@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/User');
 const Banner = require('../models/Banner');
+const Product = require('../models/Product');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
@@ -53,6 +54,51 @@ router.post('/banners', async (req, res) => {
     res.json(banner);
   } catch (error) {
     res.status(500).json({ error: 'Failed to add banner' });
+  }
+});
+
+// --- Product Management ---
+
+// Get all products (Admin view)
+router.get('/products', async (req, res) => {
+  try {
+    const products = await Product.find({}).sort({ createdAt: -1 }).lean();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+// Create Product
+router.post('/products', async (req, res) => {
+  try {
+    const product = new Product(req.body);
+    await product.save();
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create product' });
+  }
+});
+
+// Update Product
+router.put('/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update product' });
+  }
+});
+
+// Delete Product
+router.delete('/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete product' });
   }
 });
 

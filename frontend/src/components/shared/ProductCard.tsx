@@ -41,22 +41,22 @@ export function ProductCard({ name, slug, price, imageUrl, category }: ProductCa
   };
 
   return (
-    <div className="group block cursor-pointer" onClick={() => window.location.href = `/product/${slug}`}>
-      <div className="relative aspect-[4/5] bg-muted/30 overflow-hidden mb-6">
+    <div className="group block cursor-pointer transition-all duration-300 hover:-translate-y-1" onClick={() => window.location.href = `/product/${slug}`}>
+      <div className="relative aspect-[4/5] bg-muted/20 overflow-hidden mb-6 shadow-sm group-hover:shadow-xl transition-shadow duration-300">
         {imageUrl ? (
           <img 
             src={imageUrl} 
             alt={name} 
-            className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-105"
+            className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground/50 font-sans tracking-widest text-xs uppercase">
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground/50 font-sans text-xs uppercase tracking-widest">
             No Image
           </div>
         )}
         
         {/* Subtle hover overlay */}
-        <div className="absolute inset-0 bg-background/0 group-hover:bg-background/5 transition-colors duration-500" />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
       </div>
       
       <div className="flex flex-col space-y-2 px-1">

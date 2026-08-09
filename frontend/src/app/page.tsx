@@ -59,15 +59,15 @@ export default async function Home() {
       {/* 3. Hero Section (Dynamic Banner) */}
       <section className="relative h-[80vh] flex items-center justify-center bg-muted overflow-hidden">
         {bannerImageUrl && (
-          <img src={bannerImageUrl} alt="Banner" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" />
+          <img src={bannerImageUrl} alt="Banner" className="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-overlay animate-fade-in-up" style={{ animationDuration: '1.5s' }} />
         )}
-        <div className="absolute inset-0 bg-secondary/20 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/10 to-background/80" />
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
-          <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6">Legacy of Purity</span>
-          <h1 className="font-heading text-5xl md:text-7xl font-normal text-foreground mb-8 leading-tight">
+          <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 animate-fade-in-up opacity-0">Legacy of Purity</span>
+          <h1 className="font-heading text-5xl md:text-7xl font-normal text-foreground mb-8 leading-tight animate-fade-in-up opacity-0 animate-delay-100">
             Crafting Timeless Elegance in Biratnagar
           </h1>
-          <Link href="/shop" className="inline-block border border-foreground px-12 py-4 font-sans text-sm tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors duration-500">
+          <Link href="/shop" className="inline-block border border-foreground bg-foreground/5 backdrop-blur-sm px-12 py-4 font-sans text-sm tracking-widest uppercase hover:bg-foreground hover:text-background transition-all duration-500 animate-fade-in-up opacity-0 animate-delay-200">
             Explore the Collection
           </Link>
         </div>
