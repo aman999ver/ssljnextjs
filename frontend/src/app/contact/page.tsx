@@ -1,70 +1,170 @@
+"use client";
+
+import { useState } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import { Button } from "@/components/ui/button";
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  });
+  
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("");
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`${backendUrl}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setStatus("Thank you! Your message has been sent successfully. We will get back to you shortly.");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        setError(data.error || "Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      setError("A network error occurred. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="flex flex-col min-h-screen bg-background">
       <Navbar />
 
-      <section className="py-24 px-8 max-w-5xl mx-auto w-full flex-grow">
+      {/* Header */}
+      <section className="bg-muted py-24 text-center px-4">
+        <h1 className="font-heading text-5xl md:text-6xl text-foreground mb-4">Contact Us</h1>
+        <p className="font-sans text-sm tracking-widest uppercase text-muted-foreground">
+          We are here to assist you
+        </p>
+      </section>
+
+      {/* Content */}
+      <section className="py-24 px-8 max-w-6xl mx-auto w-full flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           
-          {/* Left Column - Info */}
-          <div>
-            <span className="font-sans text-sm tracking-[0.3em] uppercase text-primary mb-6 block">Get in Touch</span>
-            <h1 className="font-heading text-5xl font-normal text-foreground mb-8">
-              Visit Our Showroom
-            </h1>
-            <div className="space-y-8 font-sans text-muted-foreground">
-              <div>
-                <h3 className="text-foreground uppercase tracking-widest text-xs mb-2">Address</h3>
-                <p>Main Road, Biratnagar<br />Morang, Nepal</p>
-              </div>
-              <div>
-                <h3 className="text-foreground uppercase tracking-widest text-xs mb-2">Phone</h3>
-                <p>+977-21-XXXXXX</p>
-              </div>
-              <div>
-                <h3 className="text-foreground uppercase tracking-widest text-xs mb-2">Business Hours</h3>
-                <p>Sunday - Friday: 10:00 AM - 7:00 PM<br />Saturday: Closed</p>
-              </div>
+          {/* Contact Details */}
+          <div className="flex flex-col justify-center space-y-12">
+            <div>
+              <h3 className="font-sans text-xs tracking-widest uppercase text-primary mb-4">Visit Our Store</h3>
+              <p className="font-heading text-2xl text-foreground mb-2">Shree Shubha Laxmi Jewellery</p>
+              <p className="font-sans font-light text-muted-foreground leading-relaxed">
+                Main Road, Biratnagar<br />
+                Koshi Province, Nepal
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-sans text-xs tracking-widest uppercase text-primary mb-4">Direct Contact</h3>
+              <p className="font-sans text-lg text-foreground mb-2">
+                <a href="tel:+9779807313993" className="hover:text-primary transition-colors">+977 9807313993</a>
+              </p>
+              <p className="font-sans font-light text-muted-foreground">
+                Available Sun-Fri, 10:00 AM - 7:00 PM
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-sans text-xs tracking-widest uppercase text-primary mb-4">Email Concierge</h3>
+              <p className="font-sans text-lg text-foreground mb-2">
+                <a href="mailto:contact@subhalaxmijewellery.com" className="hover:text-primary transition-colors">
+                  contact@subhalaxmijewellery.com
+                </a>
+              </p>
             </div>
           </div>
 
-          {/* Right Column - Form */}
-          <div className="bg-muted/50 p-10">
-            <h2 className="font-heading text-3xl mb-8">Send an Inquiry</h2>
-            <form className="space-y-6">
+          {/* Contact Form */}
+          <div className="bg-muted/30 border border-border/50 p-8 md:p-12">
+            <h2 className="font-heading text-3xl text-foreground mb-8">Send an Enquiry</h2>
+            
+            {status && <div className="mb-8 p-4 bg-primary/10 text-primary font-sans text-xs uppercase tracking-widest text-center">{status}</div>}
+            {error && <div className="mb-8 p-4 bg-destructive/10 text-destructive font-sans text-xs uppercase tracking-widest text-center">{error}</div>}
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-xs uppercase tracking-widest mb-2">Full Name</label>
-                <input type="text" className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors" placeholder="Your Name" />
+                <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Full Name</label>
+                <input 
+                  type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Email Address</label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Phone (Optional)</label>
+                  <input 
+                    type="tel" 
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest mb-2">Email Address</label>
-                <input type="email" className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors" placeholder="your@email.com" />
+                <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Message</label>
+                <textarea 
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm min-h-[120px]" 
+                  required
+                />
               </div>
-              <div>
-                <label className="block text-xs uppercase tracking-widest mb-2">Message</label>
-                <textarea rows={4} className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors resize-none" placeholder="How can we help you?"></textarea>
-              </div>
-              <Button type="button" className="w-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-widest py-6">
-                Send Message
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-foreground text-background hover:bg-foreground/90 uppercase tracking-widest py-6 mt-4">
+                {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
           </div>
-        </div>
-
-        {/* Map Section */}
-        <div className="mt-24 w-full h-[450px] bg-muted relative grayscale hover:grayscale-0 transition-all duration-700">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3571.9962226725056!2d87.2808216!3d26.455850699999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ef74470bf51b29%3A0x1502855e2442f691!2sShree%20Subha%20Laxmi%20Jewellery!5e0!3m2!1sen!2snp!4v1786269315697!5m2!1sen!2snp" 
-            className="absolute inset-0 w-full h-full border-0" 
-            allowFullScreen={false} 
-            loading="lazy" 
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
+          
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-foreground text-background py-20 px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="font-heading text-xl uppercase tracking-widest text-primary mb-4">Shree Shubha Laxmi</p>
+          <p className="font-sans text-xs font-light tracking-widest uppercase opacity-60">Biratnagar, Nepal</p>
+        </div>
+      </footer>
     </main>
   );
 }
