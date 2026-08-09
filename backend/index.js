@@ -18,7 +18,6 @@ mongoose.connect(MONGODB_URI, { family: 4 })
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
-const Banner = require('./models/Banner');
 const Setting = require('./models/Setting');
 const authRoutes = require('./routes/auth');
 const cartRoutes = require('./routes/cart');
