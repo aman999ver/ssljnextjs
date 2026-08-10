@@ -36,8 +36,14 @@ function calculatePrice(product, rates, taxes) {
 
   let validRates = Array.isArray(rates) ? rates : (rates.data && Array.isArray(rates.data) ? rates.data : []);
 
+  const frontendType = product.metalType.toLowerCase();
+  let apiType = frontendType;
+  if (frontendType.includes('24k')) apiType = 'fine gold (9999)';
+  else if (frontendType.includes('22k')) apiType = 'tejabi gold';
+  else if (frontendType.includes('silver')) apiType = 'silver';
+
   // Find the exact metal rate
-  const rateItem = validRates.find(r => r.metal_type && r.metal_type.toLowerCase() === product.metalType.toLowerCase());
+  const rateItem = validRates.find(r => r.metal_type && r.metal_type.toLowerCase() === apiType);
   if (!rateItem) return product.price || 0;
 
   let baseRate = rateItem.rate;

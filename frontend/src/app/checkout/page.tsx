@@ -14,6 +14,8 @@ export default function CheckoutPage() {
   const [taxes, setTaxes] = useState({ goldTax: 0, silverTax: 0 });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [orderSuccessData, setOrderSuccessData] = useState<any>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -115,30 +117,54 @@ export default function CheckoutPage() {
       const orderData = await orderRes.json();
 
       if (!orderRes.ok) {
-        alert(`${orderData.error || "Failed to create order"}\n\nDetails: ${orderData.details || ''}`);
+        setErrorMessage(`${orderData.error || "Failed to create order"}. ${orderData.details || ''}`);
         setSubmitting(false);
         return;
       }
 
-      // 2. Handle WhatsApp Redirection
-      alert("Order placed successfully! Redirecting to WhatsApp to complete your order.");
+      // 2. Handle WhatsApp Redirection via Beautiful UI
       window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { addedQuantity: -100 } })); // Trigger reload
-      
-      const waNumber = "9779807313993";
-      const message = `Hello! I just placed an order on your website.\nOrder Number: ${orderData.orderNumber}\nTotal Amount: NPR ${orderData.totalAmount}\nName: ${formData.fullName}\nCity: ${formData.city}`;
-      const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-      
-      window.open(waUrl, "_blank");
-      router.push("/profile");
+      setOrderSuccessData(orderData);
       
     } catch (error) {
       console.error(error);
-      alert("An unexpected error occurred.");
+      setErrorMessage("An unexpected error occurred while placing your order.");
       setSubmitting(false);
     }
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><p className="font-sans uppercase tracking-widest text-muted-foreground text-sm">Loading Checkout...</p></div>;
+
+  if (orderSuccessData) {
+    const waNumber = "9779807313993";
+    const message = `Hello! I just placed an order on your website.\nOrder Number: ${orderSuccessData.orderNumber}\nTotal Amount: NPR ${orderSuccessData.totalAmount}\nName: ${formData.fullName}\nCity: ${formData.city}`;
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+
+    return (
+      <main className="flex flex-col min-h-screen bg-background">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center px-8 py-24">
+          <div className="max-w-xl w-full text-center p-16 border border-border bg-card shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+            <div className="w-24 h-24 bg-primary/10 text-primary flex items-center justify-center rounded-full mx-auto mb-8 animate-pulse relative z-10">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" /></svg>
+            </div>
+            <h1 className="font-heading text-5xl mb-4 relative z-10">Order Received</h1>
+            <p className="font-sans text-sm text-muted-foreground mb-10 leading-relaxed relative z-10">
+              Your order <span className="font-bold text-foreground">{orderSuccessData.orderNumber}</span> has been securely saved. 
+              To finalize payment and arrange delivery, please confirm your order via WhatsApp.
+            </p>
+            <Button onClick={() => { window.open(waUrl, "_blank"); router.push("/profile"); }} className="w-full bg-[#25D366] text-white hover:bg-[#128C7E] py-8 text-sm uppercase tracking-widest font-bold shadow-lg hover:shadow-xl transition-all relative z-10">
+              Confirm on WhatsApp
+            </Button>
+            <button onClick={() => router.push("/profile")} className="mt-6 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors relative z-10">
+              View Order History
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (!cart || !cart.items || cart.items.length === 0) {
     return (
@@ -166,6 +192,15 @@ export default function CheckoutPage() {
         <div className="flex flex-col lg:flex-row gap-16">
           {/* Shipping & Payment Form */}
           <div className="w-full lg:w-2/3">
+            {errorMessage && (
+              <div className="mb-8 p-4 border border-red-500/50 bg-red-500/10 text-red-500 text-sm font-sans flex items-start gap-3">
+                <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <div>
+                  <p className="font-bold mb-1">Error processing order</p>
+                  <p className="opacity-90">{errorMessage}</p>
+                </div>
+              </div>
+            )}
             <form onSubmit={handlePlaceOrder}>
               <h2 className="font-heading text-2xl mb-8 border-b border-border pb-4">1. Shipping Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
