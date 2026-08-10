@@ -66,7 +66,7 @@ export default function AdminPage() {
 
     try {
       if (!rates) {
-        const ratesApi = process.env.NEXT_PUBLIC_RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar";
+        const ratesApi = `${backendUrl}/api/rates`;
         fetch(ratesApi).then(r => r.json()).then(d => setRates(d)).catch(e => console.error("Rates fetch error", e));
         
         // Also fetch tax settings globally for the preview
