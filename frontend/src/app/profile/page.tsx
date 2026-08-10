@@ -148,6 +148,12 @@ export default function ProfilePage() {
               Profile Details
             </button>
             <button 
+              onClick={() => setActiveTab("orders")} 
+              className={`text-left py-3 px-4 transition-colors ${activeTab === "orders" ? "bg-muted text-primary" : "text-foreground hover:bg-muted/50"}`}
+            >
+              Order History
+            </button>
+            <button 
               onClick={() => setActiveTab("security")} 
               className={`text-left py-3 px-4 transition-colors ${activeTab === "security" ? "bg-muted text-primary" : "text-foreground hover:bg-muted/50"}`}
             >
@@ -223,6 +229,13 @@ export default function ProfilePage() {
               </div>
             )}
 
+            {activeTab === "orders" && (
+              <div className="bg-muted/30 p-8 border border-border/50">
+                <h2 className="font-sans text-sm tracking-[0.2em] uppercase text-primary mb-8">Order History</h2>
+                <OrderHistoryList backendUrl={backendUrl} />
+              </div>
+            )}
+
             {activeTab === "security" && (
               <div className="bg-muted/30 p-8 border border-border/50">
                 <h2 className="font-sans text-sm tracking-[0.2em] uppercase text-primary mb-8">Change Password</h2>
@@ -262,5 +275,71 @@ export default function ProfilePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function OrderHistoryList({ backendUrl }: { backendUrl: string }) {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`${backendUrl}/api/orders/my-orders`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) setOrders(await res.json());
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, [backendUrl]);
+
+  if (loading) return <p className="font-sans text-xs tracking-widest uppercase text-muted-foreground">Loading orders...</p>;
+  if (orders.length === 0) return <p className="font-sans text-xs tracking-widest uppercase text-muted-foreground">No orders found.</p>;
+
+  return (
+    <div className="space-y-6">
+      {orders.map((order) => (
+        <div key={order._id} className="border border-border/50 p-6 bg-background">
+          <div className="flex justify-between items-center mb-4 border-b border-border/30 pb-4">
+            <div>
+              <p className="font-heading text-lg">{order.orderNumber}</p>
+              <p className="font-sans text-[10px] tracking-widest uppercase text-muted-foreground">
+                {new Date(order.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-sans text-sm font-medium tracking-widest">NPR {order.totalAmount.toLocaleString()}</p>
+              <p className="font-sans text-[10px] tracking-widest uppercase text-muted-foreground mt-1">
+                Status: <span className="text-primary">{order.orderStatus}</span>
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2 mb-4">
+            {order.items.map((item: any, index: number) => (
+              <div key={index} className="flex justify-between font-sans text-xs text-muted-foreground">
+                <span>{item.name} x {item.quantity}</span>
+                <span>NPR {(item.price * item.quantity).toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+          <div className="bg-muted/20 p-4 border border-border/20 flex flex-col md:flex-row justify-between gap-4 font-sans text-[10px] uppercase tracking-widest">
+            <div>
+              <p className="text-muted-foreground mb-1">Payment Method</p>
+              <p>{order.paymentMethod}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Payment Status</p>
+              <p className={order.paymentStatus === 'Paid' ? 'text-green-600' : 'text-primary'}>{order.paymentStatus}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

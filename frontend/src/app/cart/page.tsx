@@ -119,9 +119,11 @@ export default function CartPage() {
                     NPR {cart.items.reduce((total: number, item: any) => total + (calculatePrice(item.product, rates, taxes) * item.quantity), 0).toLocaleString()}
                   </span>
                 </div>
-                <Button className="w-full bg-foreground text-background uppercase tracking-widest py-6 hover:bg-foreground/90">
-                  Proceed to Checkout
-                </Button>
+                <Link href="/checkout" className="block w-full">
+                  <Button className="w-full bg-foreground text-background uppercase tracking-widest py-6 hover:bg-foreground/90">
+                    Proceed to Checkout
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

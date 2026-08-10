@@ -24,13 +24,20 @@ const adminRoutes = require('./routes/admin');
 const cartRoutes = require('./routes/cart');
 const contactRoutes = require('./routes/contact');
 const uploadRoutes = require('./routes/upload');
+const orderRoutes = require('./routes/order');
+const paymentRoutes = require('./routes/payment');
 
-// Use Routes
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/admin/upload', uploadRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // --- API Endpoints ---
 
