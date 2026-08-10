@@ -44,6 +44,19 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
+// Proxy live rates to bypass frontend CORS
+app.get('/api/rates', async (req, res) => {
+  try {
+    const apiUrl = process.env.RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar";
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error("Rates API failed");
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch rates' });
+  }
+});
+
 // Get all products
 app.get('/api/products', async (req, res) => {
   try {

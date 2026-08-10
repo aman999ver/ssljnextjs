@@ -28,7 +28,7 @@ export default function CartPage() {
     try {
       const [cartRes, ratesRes, settingsRes] = await Promise.all([
         fetch(`${backendUrl}/api/cart`, { headers: { "Authorization": `Bearer ${token}` } }),
-        fetch(process.env.NEXT_PUBLIC_RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar"),
+        fetch(`${backendUrl}/api/rates`),
         fetch(`${backendUrl}/api/settings`)
       ]);
 
