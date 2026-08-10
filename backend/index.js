@@ -71,6 +71,7 @@ app.get('/api/products/featured', async (req, res) => {
     const rawProducts = await Product.find({}).sort({ _id: -1 }).limit(4).lean();
     
     const products = rawProducts.map((p) => ({
+      ...p,
       slug: p.slug || p._id.toString(),
       name: p.name || p.productName || p.title || "Unnamed Product",
       price: p.price || p.productPrice || null,
