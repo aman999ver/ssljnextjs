@@ -34,8 +34,10 @@ function calculatePrice(product, rates, taxes) {
 
   if (!product.weight || !product.metalType) return product.price || 0;
 
+  let validRates = Array.isArray(rates) ? rates : (rates.data && Array.isArray(rates.data) ? rates.data : []);
+
   // Find the exact metal rate
-  const rateItem = rates.find(r => r.metal_type.toLowerCase() === product.metalType.toLowerCase());
+  const rateItem = validRates.find(r => r.metal_type && r.metal_type.toLowerCase() === product.metalType.toLowerCase());
   if (!rateItem) return product.price || 0;
 
   let baseRate = rateItem.rate;
@@ -72,6 +74,8 @@ function calculatePrice(product, rates, taxes) {
   if (taxRate) {
     basePrice += basePrice * (taxRate / 100);
   }
+
+  if (isNaN(basePrice)) return product.price || 0;
 
   return Math.round(basePrice);
 }

@@ -34,7 +34,7 @@ router.post('/create', authMiddleware, async (req, res) => {
     const mongoose = require('mongoose');
     const validProductIds = cart.items
       .map(item => item.productId)
-      .filter(id => mongoose.Types.ObjectId.isValid(id));
+      .filter(id => id && mongoose.Types.ObjectId.isValid(id));
       
     const products = await Product.find({ _id: { $in: validProductIds } }).lean();
 
@@ -46,6 +46,7 @@ router.post('/create', authMiddleware, async (req, res) => {
     const orderItems = [];
 
     for (const item of cart.items) {
+      if (!item.productId) continue;
       const p = products.find(prod => prod._id.toString() === item.productId.toString());
       if (p) {
         const itemPrice = calculatePrice(p, rates, taxes);
@@ -97,7 +98,7 @@ router.post('/create', authMiddleware, async (req, res) => {
     res.json({ message: 'Order created successfully', orderId: order._id, orderNumber: order.orderNumber, totalAmount });
   } catch (error) {
     console.error('Error creating order:', error);
-    res.status(500).json({ error: 'Failed to create order' });
+    res.status(500).json({ error: 'Failed to create order', details: error.message, stack: error.stack });
   }
 });
 

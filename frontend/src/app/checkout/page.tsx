@@ -115,7 +115,7 @@ export default function CheckoutPage() {
       const orderData = await orderRes.json();
 
       if (!orderRes.ok) {
-        alert(orderData.error || "Failed to create order");
+        alert(`${orderData.error || "Failed to create order"}\n\nDetails: ${orderData.details || ''}`);
         setSubmitting(false);
         return;
       }
