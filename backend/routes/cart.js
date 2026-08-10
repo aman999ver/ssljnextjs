@@ -14,8 +14,12 @@ router.get('/', authMiddleware, async (req, res) => {
     }
     
     // Populate products manually to handle flexible schema
-    const productIds = cart.items.map(item => item.productId);
-    const products = await Product.find({ _id: { $in: productIds } }).lean();
+    const mongoose = require('mongoose');
+    const validProductIds = cart.items
+      .map(item => item.productId)
+      .filter(id => mongoose.Types.ObjectId.isValid(id));
+      
+    const products = await Product.find({ _id: { $in: validProductIds } }).lean();
     
     const populatedItems = cart.items.map(item => {
       const p = products.find(prod => prod._id.toString() === item.productId.toString());
@@ -25,6 +29,7 @@ router.get('/', authMiddleware, async (req, res) => {
         productId: item.productId,
         quantity: item.quantity,
         product: {
+          ...p, // Pass full product so calculatePrice gets priceMode, weight, lossType, etc.
           name: p.name || p.productName || p.title,
           price: p.price || p.productPrice,
           imageUrl: p.image || (p.images && p.images.length > 0 ? p.images[0] : null)
