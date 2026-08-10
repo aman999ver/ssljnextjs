@@ -405,13 +405,14 @@ export default function AdminPage() {
           <div className="overflow-x-auto bg-muted/10 border border-border/50">
             <table className="w-full text-left font-sans text-sm">
               <thead className="text-xs uppercase tracking-widest text-muted-foreground border-b border-border bg-muted/30">
-                <tr><th className="px-6 py-4 font-normal">Order #</th><th className="px-6 py-4 font-normal">Customer</th><th className="px-6 py-4 font-normal">Total</th><th className="px-6 py-4 font-normal">Status</th><th className="px-6 py-4 font-normal">Payment</th></tr>
+                <tr><th className="px-6 py-4 font-normal">Order #</th><th className="px-6 py-4 font-normal">Customer</th><th className="px-6 py-4 font-normal">Phone</th><th className="px-6 py-4 font-normal">Total</th><th className="px-6 py-4 font-normal">Status</th><th className="px-6 py-4 font-normal">Payment</th></tr>
               </thead>
               <tbody>
                 {orders.map((o: any) => (
                   <tr key={o._id} className="border-b border-border/30 hover:bg-muted/20">
                     <td className="px-6 py-4 text-foreground">{o.orderNumber}</td>
-                    <td className="px-6 py-4 text-muted-foreground">{o.user?.firstName || 'Unknown'} {o.user?.lastName || ''}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{o.user?.firstName || o.shippingAddress?.firstName || 'Unknown'} {o.user?.lastName || o.shippingAddress?.lastName || ''}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{o.user?.phone || o.shippingAddress?.phone || 'Unknown'}</td>
                     <td className="px-6 py-4 text-muted-foreground">NPR {o.totalAmount}</td>
                     <td className="px-6 py-4">
                       <select value={o.orderStatus} onChange={e => handleOrderStatusUpdate(o._id, e.target.value, 'orderStatus')} className="bg-transparent border border-border p-1 text-xs outline-none">
