@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      
+
       if (!res.ok) {
         setError(data.error || "Authentication failed");
       } else {
@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
           <h1 className="font-heading text-4xl font-normal text-foreground mb-8 text-center">
             Staff Login
           </h1>
-          
+
           {error && (
             <div className="bg-destructive/10 text-destructive text-sm font-sans tracking-widest p-4 mb-6 uppercase text-center">
               {error}
@@ -60,23 +60,23 @@ export default function AdminLoginPage() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Admin Email</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
-                placeholder="admin@subhalaxmi.com" 
+                className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm"
+                placeholder="Enter Email"
                 required
               />
             </div>
             <div>
               <label className="block text-xs uppercase tracking-widest mb-2 text-muted-foreground">Password</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" 
-                placeholder="••••••••" 
+                className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm"
+                placeholder="Enter Password"
                 required
               />
             </div>
