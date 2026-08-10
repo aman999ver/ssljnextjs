@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 async function getRates() {
   const apiUrl = process.env.NEXT_PUBLIC_RATES_API_URL || "https://swarna-mobile.onrender.com/api/rates/regional?town=Biratnagar";
   try {
-    const res = await fetch(apiUrl, { next: { revalidate: 3600 } });
+    const res = await fetch(apiUrl, { cache: 'no-store' });
     if (!res.ok) return null;
     return res.json();
   } catch (error) {

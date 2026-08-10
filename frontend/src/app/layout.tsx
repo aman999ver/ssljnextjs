@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${playfair.variable} ${jost.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "placeholder_for_google_client_id"}>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "678679165692-us7fbcb6e8v5hh3aofnntt2gunmfc7pp.apps.googleusercontent.com"}>
           {children}
         </GoogleOAuthProvider>
       </body>
