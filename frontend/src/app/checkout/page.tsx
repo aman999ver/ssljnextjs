@@ -23,7 +23,7 @@ export default function CheckoutPage() {
     notes: ""
   });
   
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState("WhatsApp");
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ssljnextjs.onrender.com";
 
@@ -120,34 +120,16 @@ export default function CheckoutPage() {
         return;
       }
 
-      // 2. Handle Payment Gateway Redirection
-      if (paymentMethod === 'eSewa' || paymentMethod === 'COD') {
-        // Both full eSewa and COD (advance) require eSewa gateway
-        const esewaRes = await fetch(`${backendUrl}/api/payment/esewa/initiate`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({ orderId: orderData.orderId })
-        });
-
-        const esewaData = await esewaRes.json();
-
-        if (esewaRes.ok) {
-          // Redirect to our hidden esewa form page that will POST to esewa
-          const queryParams = new URLSearchParams(esewaData).toString();
-          router.push(`/payment/esewa?${queryParams}`);
-        } else {
-          alert("Order placed, but failed to initiate payment. Please contact support.");
-          router.push("/profile");
-        }
-      } else {
-        // Bank Transfer (Manual)
-        alert("Order placed successfully! Please check your order history for bank details.");
-        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { addedQuantity: -100 } })); // Trigger reload
-        router.push("/profile");
-      }
+      // 2. Handle WhatsApp Redirection
+      alert("Order placed successfully! Redirecting to WhatsApp to complete your order.");
+      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { addedQuantity: -100 } })); // Trigger reload
+      
+      const waNumber = "9779807313993";
+      const message = `Hello! I just placed an order on your website.\nOrder Number: ${orderData.orderNumber}\nTotal Amount: NPR ${orderData.totalAmount}\nName: ${formData.fullName}\nCity: ${formData.city}`;
+      const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+      
+      window.open(waUrl, "_blank");
+      router.push("/profile");
       
     } catch (error) {
       console.error(error);
@@ -214,34 +196,14 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <h2 className="font-heading text-2xl mb-8 border-b border-border pb-4">2. Payment Method</h2>
+              <h2 className="font-heading text-2xl mb-8 border-b border-border pb-4">2. Order Confirmation</h2>
               <div className="space-y-4 mb-12">
-                <label className={`block p-6 border cursor-pointer transition-colors ${paymentMethod === 'eSewa' ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-border'}`}>
+                <label className="block p-6 border border-primary bg-primary/5 cursor-pointer transition-colors">
                   <div className="flex items-center gap-4">
-                    <input type="radio" name="paymentMethod" value="eSewa" checked={paymentMethod === 'eSewa'} onChange={() => setPaymentMethod('eSewa')} className="w-4 h-4 text-primary" />
+                    <input type="radio" name="paymentMethod" value="WhatsApp" checked={true} readOnly className="w-4 h-4 text-primary" />
                     <div>
-                      <p className="font-heading text-xl">Pay Full via eSewa</p>
-                      <p className="font-sans text-xs text-muted-foreground mt-1 tracking-wider uppercase">Pay securely using eSewa Wallet or Mobile Banking.</p>
-                    </div>
-                  </div>
-                </label>
-
-                <label className={`block p-6 border cursor-pointer transition-colors ${paymentMethod === 'COD' ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-border'}`}>
-                  <div className="flex items-center gap-4">
-                    <input type="radio" name="paymentMethod" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="w-4 h-4 text-primary" />
-                    <div>
-                      <p className="font-heading text-xl">Cash on Delivery (500 NPR Advance)</p>
-                      <p className="font-sans text-xs text-muted-foreground mt-1 tracking-wider uppercase">You will be redirected to eSewa to pay a 500 NPR advance. The rest is collected on delivery.</p>
-                    </div>
-                  </div>
-                </label>
-
-                <label className={`block p-6 border cursor-pointer transition-colors ${paymentMethod === 'Bank Transfer' ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-border'}`}>
-                  <div className="flex items-center gap-4">
-                    <input type="radio" name="paymentMethod" value="Bank Transfer" checked={paymentMethod === 'Bank Transfer'} onChange={() => setPaymentMethod('Bank Transfer')} className="w-4 h-4 text-primary" />
-                    <div>
-                      <p className="font-heading text-xl">Manual Bank Transfer</p>
-                      <p className="font-sans text-xs text-muted-foreground mt-1 tracking-wider uppercase">Your order will be pending until you manually transfer the funds and we verify it.</p>
+                      <p className="font-heading text-xl">Order via WhatsApp</p>
+                      <p className="font-sans text-xs text-muted-foreground mt-1 tracking-wider uppercase">You will be redirected to WhatsApp to confirm your order and arrange payment.</p>
                     </div>
                   </div>
                 </label>
