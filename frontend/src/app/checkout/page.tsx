@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { calculatePrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -190,19 +189,19 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                 <div>
                   <label className="block font-sans text-xs uppercase tracking-widest text-muted-foreground mb-2">Full Name *</label>
-                  <Input name="fullName" value={formData.fullName} onChange={handleInputChange} required className="rounded-none border-border" />
+                  <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" />
                 </div>
                 <div>
                   <label className="block font-sans text-xs uppercase tracking-widest text-muted-foreground mb-2">Phone Number *</label>
-                  <Input name="phone" value={formData.phone} onChange={handleInputChange} required className="rounded-none border-border" />
+                  <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block font-sans text-xs uppercase tracking-widest text-muted-foreground mb-2">Detailed Address *</label>
-                  <Input name="address" value={formData.address} onChange={handleInputChange} required placeholder="House No, Street, Landmark" className="rounded-none border-border" />
+                  <input type="text" name="address" value={formData.address} onChange={handleInputChange} required placeholder="House No, Street, Landmark" className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" />
                 </div>
                 <div>
                   <label className="block font-sans text-xs uppercase tracking-widest text-muted-foreground mb-2">City *</label>
-                  <Input name="city" value={formData.city} onChange={handleInputChange} required className="rounded-none border-border" />
+                  <input type="text" name="city" value={formData.city} onChange={handleInputChange} required className="w-full bg-transparent border-b border-border py-2 px-0 outline-none focus:border-primary transition-colors font-sans text-sm" />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block font-sans text-xs uppercase tracking-widest text-muted-foreground mb-2">Order Notes (Optional)</label>
