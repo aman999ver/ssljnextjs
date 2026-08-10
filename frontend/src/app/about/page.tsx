@@ -48,7 +48,7 @@ export default function HeritagePage() {
           <div className="text-center">
             <h3 className="font-heading text-2xl text-foreground mb-4">Purity Guaranteed</h3>
             <p className="font-sans font-light text-muted-foreground text-sm leading-relaxed">
-              We stand by the authenticity of our metals. Our 24K Fine Gold and 22K Tejabi Gold are rigorously tested and hallmark certified, offering you complete peace of mind.
+              We stand by the authenticity of our metals. Our 24K Gold and 22K Gold are rigorously tested and hallmark certified, offering you complete peace of mind.
             </p>
           </div>
           <div className="text-center">

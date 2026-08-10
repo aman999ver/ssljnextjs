@@ -55,7 +55,7 @@ export default async function RatesPage() {
             
             {/* 24K Gold Card */}
             <div className="bg-muted/30 border border-border/50 p-12 text-center hover:border-primary transition-colors duration-500 flex flex-col items-center justify-center">
-              <h2 className="font-heading text-2xl text-foreground mb-2">24K Fine Gold</h2>
+              <h2 className="font-heading text-2xl text-foreground mb-2">24K Gold</h2>
               <div className="w-12 h-[1px] bg-primary mb-6"></div>
               <span className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Per Tola</span>
               <p className="font-sans text-3xl tracking-widest text-foreground">
@@ -68,7 +68,7 @@ export default async function RatesPage() {
 
             {/* 22K Gold Card */}
             <div className="bg-muted/30 border border-border/50 p-12 text-center hover:border-primary transition-colors duration-500 flex flex-col items-center justify-center">
-              <h2 className="font-heading text-2xl text-foreground mb-2">22K Tejabi Gold</h2>
+              <h2 className="font-heading text-2xl text-foreground mb-2">22K Gold</h2>
               <div className="w-12 h-[1px] bg-primary mb-6"></div>
               <span className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Per Tola</span>
               <p className="font-sans text-3xl tracking-widest text-foreground">
