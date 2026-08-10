@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
-export default function EsewaPaymentRedirect() {
+function EsewaRedirectContent() {
   const searchParams = useSearchParams();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -54,5 +55,13 @@ export default function EsewaPaymentRedirect() {
         <input type="hidden" id="signature" name="signature" value={signature} required />
       </form>
     </div>
+  );
+}
+
+export default function EsewaPaymentRedirect() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin w-8 h-8 text-primary" /></div>}>
+      <EsewaRedirectContent />
+    </Suspense>
   );
 }
