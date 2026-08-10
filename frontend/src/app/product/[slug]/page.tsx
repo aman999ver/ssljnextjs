@@ -160,7 +160,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </ul>
             </div>
 
-            <AddToCartButton productId={product.slug} className="w-full h-16 rounded-none font-sans tracking-widest uppercase text-sm border border-primary bg-primary hover:bg-transparent hover:text-primary transition-all duration-500" />
+            <AddToCartButton productId={product._id || product.slug} className="w-full h-16 rounded-none font-sans tracking-widest uppercase text-sm border border-primary bg-primary hover:bg-transparent hover:text-primary transition-all duration-500" />
             
             
             <div className="mt-8 pt-8 border-t border-border flex justify-between items-center font-sans text-xs uppercase tracking-widest text-muted-foreground">

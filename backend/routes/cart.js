@@ -41,6 +41,12 @@ router.get('/', authMiddleware, async (req, res) => {
 // Add to cart
 router.post('/add', authMiddleware, async (req, res) => {
   try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user.id);
+    if (!user.phone || user.phone.includes('Not Provided')) {
+      return res.status(400).json({ error: 'Please add your phone number in your Profile before adding items to your cart.' });
+    }
+
     const { productId, quantity = 1 } = req.body;
     let cart = await Cart.findOne({ userId: req.user.id });
     

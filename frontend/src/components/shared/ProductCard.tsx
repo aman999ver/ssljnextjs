@@ -5,6 +5,7 @@ import { calculatePrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/shared/AddToCartButton";
 
 interface ProductCardProps {
+  _id?: string;
   name: string;
   slug: string;
   price?: number; // legacy static price
@@ -20,7 +21,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ 
-  name, slug, price, metalType, weight, lossType, lossValue, makingCharge, imageUrl, category, rates, taxes 
+  _id, name, slug, price, metalType, weight, lossType, lossValue, makingCharge, imageUrl, category, rates, taxes 
 }: ProductCardProps) {
   
   const displayPrice = calculatePrice({ price, metalType, weight, lossType, lossValue, makingCharge }, rates, taxes);
@@ -64,7 +65,7 @@ export function ProductCard({
           </p>
         )}
         
-        <AddToCartButton productId={slug} variant="ghost" />
+        <AddToCartButton productId={_id || slug} variant="ghost" />
       </div>
     </div>
   );

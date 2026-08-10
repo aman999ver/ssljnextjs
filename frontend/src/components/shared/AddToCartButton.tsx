@@ -35,9 +35,13 @@ export function AddToCartButton({ productId, className, variant = "default" }: A
       if (res.ok) {
         alert("Added to cart!");
         window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { addedQuantity: 1 } }));
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to add to cart");
       }
     } catch (error) {
       console.error(error);
+      alert("An unexpected error occurred.");
     }
   };
 
