@@ -169,11 +169,20 @@ router.get('/products', async (req, res) => {
 
 router.post('/products', async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const data = req.body;
+    if (!data.slug && data.name) {
+      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
+    }
+    if (!data.sku) {
+      data.sku = 'SKU-' + Date.now() + Math.floor(Math.random() * 1000);
+    }
+    
+    const product = new Product(data);
     await product.save();
     res.json(product);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create product' });
+    console.error("Product creation error:", error);
+    res.status(500).json({ error: 'Failed to create product', details: error.message });
   }
 });
 
