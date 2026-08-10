@@ -74,6 +74,7 @@ router.post('/google', async (req, res) => {
         firstName: names[0],
         lastName: names.slice(1).join(' ') || '',
         email: email,
+        phone: 'Not Provided (Google)',
         password: await bcrypt.hash(sub || Math.random().toString(), 10), // dummy pass
         role: 'customer'
       });
